@@ -52,17 +52,17 @@ window.CONFIG = {
   DEFAULT_TEMPERATURE: 0.7,
   DEFAULT_MAX_TOKENS: 4096,
 
-  /* Free / current Groq catalog used to populate the model picker when
-   * the live /models endpoint is unreachable. (Live list wins.)
+  /* Model picker contents. Kept deliberately small and curated —
+   * llama-3.3-70b-versatile is the default and handles bioinformatics well.
+   * Any other model ID can still be typed into Settings → Custom model ID.
    */
-  FALLBACK_MODELS: [
-    "llama-3.3-70b-versatile",
-    "openai/gpt-oss-120b",
-    "openai/gpt-oss-20b",
-    "qwen/qwen3.6-27b",
-    "allam-2-7b",
-    "llama-3.1-8b-instant",
+  MODELS: [
+    { id: "llama-3.3-70b-versatile", label: "Llama 3.3 70B Versatile" },
+    { id: "llama-3.1-8b-instant", label: "Llama 3.1 8B Instant" },
   ],
+
+  /* Legacy alias — some code paths still read FALLBACK_MODELS. */
+  get FALLBACK_MODELS() { return this.MODELS.map((m) => m.id); },
 
   /* Base system prompt. Users can override it in Settings. */
   DEFAULT_SYSTEM_PROMPT:

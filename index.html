@@ -1,113 +1,172 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BioinfoGPT — AI Assistant for Bioinformatics</title>
   <meta name="description" content="BioinfoGPT: an advanced AI chat assistant for bioinformatics — answers, code, and built-in sequence tools. Powered by Groq, hosted on GitHub Pages." />
-  <meta name="theme-color" content="#0b1020" />
+  <meta name="theme-color" content="#080b16" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="vendor/github-dark.min.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <!-- ======================= Header ======================= -->
-  <header id="topbar">
-    <div class="brand">
-      <button id="menuBtn" class="icon-btn" title="History" aria-label="Toggle history">☰</button>
-      <div class="logo">
-        <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">
-          <defs>
-            <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#2dd4bf" />
-              <stop offset="1" stop-color="#a78bfa" />
-            </linearGradient>
-          </defs>
-          <path d="M24 4 C18 12 18 20 24 28 C30 20 30 12 24 4 Z" fill="none" stroke="url(#lg)" stroke-width="3" stroke-linecap="round"/>
-          <path d="M24 20 C18 28 18 36 24 44 C30 36 30 28 24 20 Z" fill="none" stroke="url(#lg)" stroke-width="3" stroke-linecap="round"/>
-          <line x1="20" y1="13" x2="28" y2="17" stroke="url(#lg)" stroke-width="3" stroke-linecap="round"/>
-          <line x1="22" y1="23" x2="26" y2="25" stroke="url(#lg)" stroke-width="3" stroke-linecap="round"/>
-          <line x1="20" y1="31" x2="28" y2="35" stroke="url(#lg)" stroke-width="3" stroke-linecap="round"/>
-        </svg>
-        <div class="brand-text">
-          <h1>Bioinfo<span>GPT</span></h1>
-          <p>AI for bioinformatics · code &amp; answers</p>
+  <!-- Shared SVG symbols -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="gradHelix" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="var(--accent)" />
+        <stop offset="1" stop-color="var(--accent-2)" />
+      </linearGradient>
+      <symbol id="icoHelix" viewBox="0 0 48 48">
+        <path d="M24 3 C17 11 17 19 24 27 C31 19 31 11 24 3 Z" fill="none" stroke="url(#gradHelix)" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M24 21 C17 29 17 37 24 45 C31 37 31 29 24 21 Z" fill="none" stroke="url(#gradHelix)" stroke-width="3.2" stroke-linecap="round"/>
+        <line x1="19.5" y1="12" x2="28.5" y2="16" stroke="url(#gradHelix)" stroke-width="3.2" stroke-linecap="round"/>
+        <line x1="21" y1="23.5" x2="27" y2="25.5" stroke="url(#gradHelix)" stroke-width="3.2" stroke-linecap="round"/>
+        <line x1="19.5" y1="33" x2="28.5" y2="37" stroke="url(#gradHelix)" stroke-width="3.2" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="icoMenu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="icoClose" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="icoPlus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="icoGear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M19.4 13.5a7.9 7.9 0 000-3l1.7-1.3-1.8-3.1-2 .8a7.8 7.8 0 00-2.6-1.5L14.4 3h-3.6l-.3 2.4a7.8 7.8 0 00-2.6 1.5l-2-.8L4.1 9.2l1.7 1.3a7.9 7.9 0 000 3l-1.7 1.3 1.8 3.1 2-.8a7.8 7.8 0 002.6 1.5l.3 2.4h3.6l.3-2.4a7.8 7.8 0 002.6-1.5l2 .8 1.8-3.1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="icoDownload" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 19h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icoFlask" viewBox="0 0 24 24"><path d="M9.5 3h5M10.5 3v6.2L5.6 17a2.2 2.2 0 001.9 3.4h9a2.2 2.2 0 001.9-3.4l-4.9-7.8V3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.6 14.2h8.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+      <symbol id="icoSun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="icoMoon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+      <symbol id="icoTrash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13M10 11v6M14 11v6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icoSearch" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="icoSend" viewBox="0 0 24 24"><path d="M4.5 12h13m0 0l-5-5m5 5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icoStop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/></symbol>
+      <symbol id="icoCopy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M15 5.5A1.5 1.5 0 0013.5 4H6a2 2 0 00-2 2v7.5A1.5 1.5 0 005.5 15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+      <symbol id="icoRefresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 11-2.6-5.9M20 4v4h-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icoDown" viewBox="0 0 24 24"><path d="M6 10l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    </defs>
+  </svg>
+
+  <div id="app">
+    <!-- ======================= Sidebar ======================= -->
+    <aside id="sidebar" aria-label="Conversation history">
+      <div class="side-top">
+        <div class="side-brand">
+          <svg class="brand-mark" width="26" height="26" aria-hidden="true"><use href="#icoHelix" /></svg>
+          <span class="brand-name">Bioinfo<span>GPT</span></span>
         </div>
+        <button id="closeSidebar" class="icon-btn ghost" title="Close panel (Ctrl+B)" aria-label="Close side panel">
+          <svg width="18" height="18" aria-hidden="true"><use href="#icoClose" /></svg>
+        </button>
       </div>
-    </div>
-    <div class="top-actions">
-      <select id="modelSelect" title="Model" aria-label="Model"></select>
-      <button id="toolsBtn" class="icon-btn" title="Sequence tools" aria-label="Sequence tools">🧬</button>
-      <button id="exportBtn" class="icon-btn" title="Export chat as Markdown" aria-label="Export chat">⤓</button>
-      <button id="newChatBtn" class="icon-btn" title="New chat" aria-label="New chat">＋</button>
-      <button id="settingsBtn" class="icon-btn" title="Settings" aria-label="Settings">⚙</button>
-    </div>
-  </header>
 
-  <!-- ======================= Sidebar ======================= -->
-  <aside id="sidebar">
-    <div class="side-head">
-      <span>History</span>
-      <button id="clearConvos" class="btn-ghost" title="Clear all history">Clear all</button>
+      <button id="sideNewChat" class="btn-new">
+        <svg width="16" height="16" aria-hidden="true"><use href="#icoPlus" /></svg> New chat
+      </button>
+
+      <div class="side-search">
+        <svg width="15" height="15" aria-hidden="true"><use href="#icoSearch" /></svg>
+        <input id="convoSearch" type="search" placeholder="Search chats…" aria-label="Search conversations" />
+      </div>
+
+      <div class="side-label">Recent</div>
+      <div id="convos" role="list"></div>
+      <div class="side-empty" id="sideEmpty">No conversations yet</div>
+
+      <div class="side-foot">
+        <button id="clearConvos" class="btn-ghost danger sm">
+          <svg width="14" height="14" aria-hidden="true"><use href="#icoTrash" /></svg> Clear history
+        </button>
+      </div>
+    </aside>
+
+    <div id="scrim" hidden></div>
+
+    <!-- ======================= Column ======================= -->
+    <div id="col">
+      <header id="topbar">
+        <div class="bar-left">
+          <button id="menuBtn" class="icon-btn" title="Toggle side panel (Ctrl+B)" aria-label="Toggle side panel" aria-expanded="true">
+            <svg width="19" height="19" aria-hidden="true"><use href="#icoMenu" /></svg>
+          </button>
+          <div class="title-block">
+            <h1 id="chatTitle">New chat</h1>
+            <p id="composerStatus"></p>
+          </div>
+        </div>
+        <div class="bar-right">
+          <div id="modelPill" class="pill" title="Active model">
+            <span class="dot"></span>
+            <select id="modelSelect" aria-label="Model"></select>
+          </div>
+          <button id="toolsBtn" class="icon-btn" title="Sequence tools" aria-label="Sequence tools">
+            <svg width="18" height="18" aria-hidden="true"><use href="#icoFlask" /></svg>
+          </button>
+          <button id="exportBtn" class="icon-btn" title="Export chat as Markdown" aria-label="Export chat">
+            <svg width="18" height="18" aria-hidden="true"><use href="#icoDownload" /></svg>
+          </button>
+          <button id="themeBtn" class="icon-btn" title="Toggle light / dark" aria-label="Toggle theme">
+            <svg class="ico-dark" width="18" height="18" aria-hidden="true"><use href="#icoMoon" /></svg>
+            <svg class="ico-light" width="18" height="18" aria-hidden="true"><use href="#icoSun" /></svg>
+          </button>
+          <button id="newChatBtn" class="icon-btn" title="New chat" aria-label="New chat">
+            <svg width="18" height="18" aria-hidden="true"><use href="#icoPlus" /></svg>
+          </button>
+          <button id="settingsBtn" class="icon-btn" title="Settings" aria-label="Settings">
+            <svg width="18" height="18" aria-hidden="true"><use href="#icoGear" /></svg>
+          </button>
+        </div>
+      </header>
+
+      <main id="main">
+        <!-- Welcome -->
+        <section id="welcome">
+          <div class="hero">
+            <div class="hero-logo"><svg width="60" height="60" aria-hidden="true"><use href="#icoHelix" /></svg></div>
+            <h2>Ask anything in bioinformatics</h2>
+            <p class="hero-sub">Answers, runnable code (Python / R / shell) and built-in sequence tools — fast and free.</p>
+            <div id="suggestions"></div>
+            <div class="hero-foot">
+              <button id="heroToolsBtn" class="btn-primary">
+                <svg width="16" height="16" aria-hidden="true"><use href="#icoFlask" /></svg> Sequence tools
+              </button>
+              <span class="hero-note">Tip: paste a FASTA sequence straight into the box below.</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Chat -->
+        <section id="chat" role="log" aria-live="polite" aria-label="Chat"></section>
+
+        <button id="scrollDown" class="scroll-down hidden" aria-label="Scroll to latest">
+          <svg width="18" height="18" aria-hidden="true"><use href="#icoDown" /></svg>
+        </button>
+
+        <!-- Composer -->
+        <div id="composerWrap">
+          <div id="composer">
+            <textarea id="input" rows="1" placeholder="Ask about genomics, NGS, phylogenetics… or paste a sequence" aria-label="Message"></textarea>
+            <div class="composer-actions">
+              <button id="sendBtn" class="btn-send" title="Send" aria-label="Send">
+                <svg width="19" height="19" aria-hidden="true"><use href="#icoSend" /></svg>
+              </button>
+              <button id="stopBtn" class="btn-send stop hidden" title="Stop generating" aria-label="Stop">
+                <svg width="19" height="19" aria-hidden="true"><use href="#icoStop" /></svg>
+              </button>
+            </div>
+          </div>
+          <div id="composerHints">
+            <button id="clearChatBtn" class="btn-ghost sm">Clear chat</button>
+            <span><kbd>Enter</kbd> send · <kbd>Shift</kbd>+<kbd>Enter</kbd> newline</span>
+          </div>
+        </div>
+      </main>
     </div>
-    <div id="convos"></div>
-    <div class="side-empty" id="sideEmpty">No conversations yet</div>
-  </aside>
-
-  <!-- ======================= Main ======================= -->
-  <main id="main">
-    <!-- Welcome -->
-    <section id="welcome">
-      <div class="hero-logo">
-        <svg viewBox="0 0 48 48" width="72" height="72" aria-hidden="true">
-          <use href="#heroHelix" />
-          <defs>
-            <linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#2dd4bf" />
-              <stop offset="1" stop-color="#a78bfa" />
-            </linearGradient>
-            <g id="heroHelix">
-              <path d="M24 2 C17 10 17 18 24 26 C31 18 31 10 24 2 Z" fill="none" stroke="url(#lg2)" stroke-width="3.5" stroke-linecap="round"/>
-              <path d="M24 22 C17 30 17 38 24 46 C31 38 31 30 24 22 Z" fill="none" stroke="url(#lg2)" stroke-width="3.5" stroke-linecap="round"/>
-              <line x1="19.5" y1="11" x2="28.5" y2="15" stroke="url(#lg2)" stroke-width="3.5" stroke-linecap="round"/>
-              <line x1="21" y1="23" x2="27" y2="25" stroke="url(#lg2)" stroke-width="3.5" stroke-linecap="round"/>
-              <line x1="19.5" y1="33" x2="28.5" y2="37" stroke="url(#lg2)" stroke-width="3.5" stroke-linecap="round"/>
-            </g>
-          </defs>
-        </svg>
-      </div>
-      <h2>Ask anything in bioinformatics</h2>
-      <p class="hero-sub">Answers, working code (Python / R / shell), and built-in sequence tools — powered by Groq, free for visitors.</p>
-      <div id="suggestions"></div>
-      <div class="hero-foot">
-        <button id="heroToolsBtn" class="btn-primary">🧬 Open sequence tools</button>
-        <span class="hero-note">Try: “Write Python to compute GC content”</span>
-      </div>
-    </section>
-
-    <!-- Chat -->
-    <section id="chat" role="log" aria-live="polite" aria-label="Chat"></section>
-
-    <!-- Composer -->
-    <div id="composerWrap">
-      <div id="composerStatus"></div>
-      <div id="composer">
-        <textarea id="input" rows="1" placeholder="Ask about genomics, NGS, phylogenetics… or paste a sequence and press Enter" aria-label="Message"></textarea>
-        <button id="sendBtn" class="btn-send" title="Send" aria-label="Send">➤</button>
-        <button id="stopBtn" class="btn-send stop hidden" title="Stop generating" aria-label="Stop">■</button>
-      </div>
-      <div id="composerHints">
-        <button id="clearChatBtn" class="btn-ghost">Clear chat</button>
-        <span>Enter ↵ to send · Shift+Enter for newline</span>
-      </div>
-    </div>
-  </main>
+  </div>
 
   <!-- ======================= Tools panel ======================= -->
   <div id="toolsPanel" class="drawer" aria-label="Sequence tools">
     <div class="drawer-head">
-      <h3>🧬 Sequence tools</h3>
-      <button id="closeTools" class="icon-btn" aria-label="Close">✕</button>
+      <h3><svg width="17" height="17" aria-hidden="true"><use href="#icoFlask" /></svg> Sequence tools</h3>
+      <button id="closeTools" class="icon-btn ghost" aria-label="Close sequence tools">
+        <svg width="18" height="18" aria-hidden="true"><use href="#icoClose" /></svg>
+      </button>
     </div>
     <div class="drawer-body">
       <textarea id="seqInput" rows="6" spellcheck="false" placeholder="Paste a DNA, RNA or protein sequence here… (FASTA text works, headers ignored)"></textarea>
@@ -135,13 +194,13 @@
           <button id="btnRandProt" class="btn-ghost">Protein</button>
         </div>
         <div class="ctl-row">
-          <button id="btnCodonTable" class="btn-ghost">Show codon table</button>
+          <button id="btnCodonTable" class="btn-ghost">Codon table</button>
           <button id="btnAnalyze" class="btn-primary">Analyze with AI ↗</button>
         </div>
       </div>
       <div id="seqResults" class="hint">Paste or type a sequence above. Whitespace, digits and hyphens are ignored.</div>
       <div id="seqResultWrap" class="hidden">
-        <div class="res-head">Result <button id="btnCopyResult" class="btn-ghost">Copy</button></div>
+        <div class="res-head">Result <button id="btnCopyResult" class="btn-ghost sm">Copy</button></div>
         <pre id="seqResultText"></pre>
       </div>
     </div>
@@ -151,8 +210,10 @@
   <div id="settingsModal" class="modal">
     <div class="modal-card">
       <div class="modal-head">
-        <h3>⚙ Settings</h3>
-        <button id="closeSettings" class="icon-btn" aria-label="Close">✕</button>
+        <h3><svg width="17" height="17" aria-hidden="true"><use href="#icoGear" /></svg> Settings</h3>
+        <button id="closeSettings" class="icon-btn ghost" aria-label="Close settings">
+          <svg width="18" height="18" aria-hidden="true"><use href="#icoClose" /></svg>
+        </button>
       </div>
       <div class="modal-body">
         <fieldset>
@@ -173,12 +234,12 @@
           <label class="field" id="groqKeyRow">
             <span>Your own Groq API key <small>(optional)</small></span>
             <input id="setGroqKey" type="password" placeholder="gsk_… (leave empty to use the built-in key)" autocomplete="off" />
-            <small>Stored only in your browser (localStorage). Never shared. Leave empty to use the site's built-in key.</small>
+            <small>Stored only in your browser (localStorage). Never shared.</small>
           </label>
           <label class="field" id="localRow">
             <span>Local API base URL</span>
             <input id="setLocalUrl" type="url" placeholder="http://localhost:11434/v1" />
-            <small>Ollama default: http://localhost:11434/v1 · LM Studio: http://localhost:1234/v1. For a lab LAN, use http://&lt;machine-ip&gt;:11434/v1.</small>
+            <small>Ollama default: http://localhost:11434/v1 · LM Studio: http://localhost:1234/v1</small>
           </label>
           <label class="field" id="localKeyRow">
             <span>Optional local API key <small>(usually empty)</small></span>
@@ -189,8 +250,8 @@
         <fieldset>
           <legend>Generation</legend>
           <label class="field">
-            <span>Custom model ID <small>(overrides the dropdown)</small></span>
-            <input id="setCustomModel" type="text" placeholder="e.g. deepseek-r1-distill-llama-70b" />
+            <span>Custom model ID <small>(advanced — overrides the picker)</small></span>
+            <input id="setCustomModel" type="text" placeholder="leave empty to use llama-3.3-70b-versatile" />
           </label>
           <label class="field">
             <span>Temperature: <b id="tempVal">0.70</b></span>
@@ -201,7 +262,7 @@
             <input id="setMaxTokens" type="number" min="256" max="8192" step="256" value="4096" />
           </label>
           <label class="check"><input id="setStreaming" type="checkbox" checked /> Stream responses (typewriter)</label>
-          <label class="check"><input id="setSmart" type="checkbox" checked /> Bioinformatics smart defaults (Biopython/R bias, structured answers)</label>
+          <label class="check"><input id="setSmart" type="checkbox" checked /> Bioinformatics smart defaults</label>
         </fieldset>
 
         <fieldset>
@@ -214,7 +275,7 @@
       </div>
       <div class="modal-foot">
         <button id="resetSettings" class="btn-ghost danger">Reset defaults</button>
-        <button id="saveSettings" class="btn-primary">Save</button>
+        <button id="saveSettings" class="btn-primary">Save changes</button>
       </div>
     </div>
   </div>
@@ -224,7 +285,9 @@
     <div class="modal-card wide">
       <div class="modal-head">
         <h3>Standard genetic code</h3>
-        <button id="btnCloseCodon" class="icon-btn" aria-label="Close">✕</button>
+        <button id="btnCloseCodon" class="icon-btn ghost" aria-label="Close">
+          <svg width="18" height="18" aria-hidden="true"><use href="#icoClose" /></svg>
+        </button>
       </div>
       <div class="modal-body scroll" id="codonBody"></div>
     </div>

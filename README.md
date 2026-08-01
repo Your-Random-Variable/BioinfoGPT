@@ -65,8 +65,12 @@ step is now optional (only if you want to hide the key on a public site).
   - **"Analyze with AI"** — sends the sequence to the model for a real analysis
 - 🧠 **Bioinformatics smart defaults** — the model is biased toward Biopython/R, structured answers, and honest about limits (toggle in Settings)
 - 📚 **Conversation history** stored locally, exportable to Markdown
-- ⚙️ **Settings** — built-in key / your own key / proxy / local model, model picker
-  (live catalog), temperature, max tokens, streaming toggle, custom system prompt
+- ⚙️ **Settings** — built-in key / your own key / proxy / local model, curated model
+  picker, temperature, max tokens, streaming toggle, custom system prompt
+- 🎛 **Clean, modern UI** — collapsible side panel (`Ctrl`/`Cmd`+`B`, or the ✕ in the
+  panel), chat search (`Ctrl`/`Cmd`+`K`), light & dark themes, keyboard shortcuts
+- 🧬 **Two models, no clutter** — `llama-3.3-70b-versatile` (default) and
+  `llama-3.1-8b-instant`; any other model ID can be set in Settings → Custom model ID
 - 🔒 **Private** — nothing is stored server-side; all history stays in the visitor's browser
 - 📦 **Fully self-contained** — all libraries are vendored locally; the site needs no
   internet/CDN to render (only the model API itself when you chat)
