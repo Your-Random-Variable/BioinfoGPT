@@ -64,7 +64,44 @@
     streaming: false,
     abort: null,
     models: [],
+    query: "",           // sidebar search filter
   };
+
+  /* =========================== UI prefs ============================= */
+  const UI_KEY = "bioinfogpt_ui_v1";
+  const UI = {
+    get() {
+      try { return { theme: "dark", sidebar: true, ...(JSON.parse(localStorage.getItem(UI_KEY)) || {}) }; }
+      catch { return { theme: "dark", sidebar: true }; }
+    },
+    set(partial) {
+      const next = { ...this.get(), ...partial };
+      try { localStorage.setItem(UI_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    },
+  };
+
+  const isNarrow = () =>
+    typeof window.matchMedia === "function"
+      ? window.matchMedia("(max-width: 900px)").matches
+      : window.innerWidth <= 900;
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", theme === "light" ? "#f6f7fb" : "#080b16");
+  }
+
+  function setSidebar(open, persist = true) {
+    const bar = $("#sidebar");
+    const scrim = $("#scrim");
+    bar.classList.toggle("collapsed", !open);
+    $("#menuBtn").setAttribute("aria-expanded", String(open));
+    if (scrim) scrim.hidden = !(open && isNarrow());
+    if (persist) UI.set({ sidebar: open });
+  }
+  function sidebarOpen() { return !$("#sidebar").classList.contains("collapsed"); }
+  function toggleSidebar() { setSidebar(!sidebarOpen()); }
 
   /* ======================== Smart defaults ========================== */
   const SMART_DEFAULTS_SYSTEM = {
@@ -134,56 +171,74 @@
   }
 
   function renderWelcome() {
-    if (!state.chat || state.chat.messages.length === 0) {
-      welcomeEl().style.display = "block";
-      chatEl().style.display = "none";
-    } else {
-      welcomeEl().style.display = "none";
-      chatEl().style.display = "flex";
-    }
+    const empty = !state.chat || state.chat.messages.length === 0;
+    welcomeEl().classList.toggle("hidden", !empty);
+    chatEl().classList.toggle("hidden", empty);
+    const t = $("#chatTitle");
+    if (t) t.textContent = empty ? "New chat" : (state.chat.title || "New chat");
+  }
+
+  function icon(id, size = 14) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", size); svg.setAttribute("height", size);
+    svg.setAttribute("aria-hidden", "true");
+    const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+    use.setAttribute("href", "#" + id);
+    svg.appendChild(use);
+    return svg;
+  }
+
+  function iconButton(cls, iconId, label) {
+    const b = el("button", cls);
+    b.type = "button";
+    b.appendChild(icon(iconId, 13));
+    b.appendChild(document.createTextNode(" " + label));
+    return b;
   }
 
   function msgNode(m) {
     const wrap = el("article", `msg msg-${m.role}`);
     wrap.dataset.id = m.id || "";
 
-    const avatar = el("div", "avatar", m.role === "user" ? "🧬" : "🧠");
+    const avatar = el("div", "avatar", m.role === "user" ? "\u{1F464}" : "\u{1F9EC}");
+    const col = el("div", "bubble-wrap");
     const bubble = el("div", "bubble");
+
     const meta = el("div", "msg-meta");
     meta.appendChild(el("span", "msg-role", m.role === "user" ? "You" : "BioinfoGPT"));
     if (m.role === "assistant") {
-      const model = el("span", "msg-model", m.model || state.chat?.model || "");
-      meta.appendChild(model);
+      meta.appendChild(el("span", "msg-model", m.model || state.chat?.model || ""));
     }
     meta.appendChild(el("time", "", timeAgo(m.ts || Date.now())));
-    bubble.appendChild(meta);
 
     const content = el("div", "msg-content");
-    content.innerHTML = renderMarkdown(m.content || "");
-    enhanceCode(content);
+    if (m.content) {
+      content.innerHTML = renderMarkdown(m.content);
+      enhanceCode(content);
+    } else if (m.role === "assistant") {
+      content.innerHTML = '<span class="typing"><i></i><i></i><i></i></span>';
+    }
     bubble.appendChild(content);
 
     const actions = el("div", "msg-actions");
-    const copyBtn = el("button", "btn-ghost", "⧉ Copy");
-    copyBtn.type = "button";
+    const copyBtn = iconButton("btn-ghost", "icoCopy", "Copy");
     copyBtn.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(m.content);
-        toast("Copied to clipboard");
-      } catch { toast("Copy failed", "error"); }
+      try { await navigator.clipboard.writeText(m.content); toast("Copied to clipboard"); }
+      catch { toast("Copy failed", "error"); }
     });
     actions.appendChild(copyBtn);
 
     if (m.role === "assistant" && !state.streaming) {
-      const regen = el("button", "btn-ghost", "↻ Regenerate");
-      regen.type = "button";
+      const regen = iconButton("btn-ghost", "icoRefresh", "Retry");
       regen.addEventListener("click", () => regenerate(m.id));
       actions.appendChild(regen);
     }
-    bubble.appendChild(actions);
 
+    col.appendChild(meta);
+    col.appendChild(bubble);
+    col.appendChild(actions);
     wrap.appendChild(avatar);
-    wrap.appendChild(bubble);
+    wrap.appendChild(col);
     return wrap;
   }
 
@@ -204,33 +259,77 @@
   function renderSidebar() {
     const list = $("#convos");
     list.innerHTML = "";
-    state.convos.forEach((c) => {
-      const item = el("button", "convo-item" + (c.id === state.activeId ? " active" : ""));
-      item.type = "button";
+    const q = state.query.trim().toLowerCase();
+    const items = q
+      ? state.convos.filter((c) => (c.title || "").toLowerCase().includes(q))
+      : state.convos;
+
+    items.forEach((c) => {
+      const item = el("div", "convo-item" + (c.id === state.activeId ? " active" : ""));
+      item.setAttribute("role", "listitem");
+      item.tabIndex = 0;
       item.appendChild(el("span", "convo-title", c.title || "New chat"));
       item.appendChild(el("span", "convo-time", timeAgo(c.ts)));
-      item.addEventListener("click", () => openConversation(c.id));
+
+      const del = el("button", "convo-del");
+      del.type = "button";
+      del.title = "Delete conversation";
+      del.setAttribute("aria-label", "Delete conversation");
+      del.appendChild(icon("icoTrash", 14));
+      del.addEventListener("click", (e) => { e.stopPropagation(); deleteConversation(c.id); });
+      item.appendChild(del);
+
+      const open = () => { openConversation(c.id); if (isNarrow()) setSidebar(false); };
+      item.addEventListener("click", open);
+      item.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
+      });
       list.appendChild(item);
     });
-    $("#sidebar").classList.toggle("empty", state.convos.length === 0);
+
+    const emptyEl = $("#sideEmpty");
+    if (emptyEl) {
+      emptyEl.classList.toggle("hidden", items.length > 0);
+      emptyEl.textContent = state.convos.length === 0
+        ? "No conversations yet"
+        : "No chats match your search";
+    }
   }
 
   function renderModelSelect() {
     const sel = $("#modelSelect");
     if (!sel) return;
-    const current = Settings.get().model;
+    const st = Settings.get();
+    const current = st.model;
+
+    // Curated list only. For hosted modes we deliberately do NOT dump the whole
+    // live Groq catalog into the picker — llama-3.3-70b-versatile is the default
+    // and works well. Power users can still set any model ID in Settings.
+    let options;
+    if (st.apiMode === "local") {
+      options = state.models.length ? state.models : CONFIG.LOCAL_FALLBACK_MODELS;
+    } else {
+      options = CONFIG.MODELS.map((m) => m.id);
+    }
+    options = [...options, current].filter(Boolean);
+
+    const labels = new Map(CONFIG.MODELS.map((m) => [m.id, m.label]));
     const used = new Set();
-    const options = [...(state.models.length ? state.models : CONFIG.FALLBACK_MODELS), current];
     sel.innerHTML = "";
     for (const id of options) {
       if (used.has(id)) continue;
       used.add(id);
-      const opt = el("option", "", id);
+      const opt = el("option", "", labels.get(id) || id);
       opt.value = id;
       sel.appendChild(opt);
     }
-    sel.value = state.models.includes(current) || CONFIG.FALLBACK_MODELS.includes(current) ? current : sel.value;
-    if (!sel.value && options.length) sel.value = options[0];
+    sel.value = current;
+    if (!sel.value && sel.options.length) sel.value = sel.options[0].value;
+
+    // Custom model overrides the picker — show that clearly.
+    const custom = !!st.customModel;
+    sel.disabled = custom;
+    sel.title = custom ? `Overridden by custom model: ${st.customModel}` : "Model";
   }
 
   function renderComposerStatus() {
@@ -239,9 +338,10 @@
     if (s.apiMode === "proxy") { provider = "Proxy"; mode = "key server-side"; }
     else if (s.apiMode === "local") { provider = "Local"; mode = "offline"; }
     else if (s.apiMode === "byok") { mode = "your key"; }
-    else { mode = s.groqKey ? "your key" : "built-in key"; } // groq
-    const model = s.customModel || s.model;
-    $("#composerStatus").textContent = `${provider} · ${model} · ${mode}`;
+    else { mode = s.groqKey ? "your key" : "built-in key"; }
+    const node = $("#composerStatus");
+    if (node) node.textContent = `${provider} · ${mode} · temp ${Number(s.temperature).toFixed(2)}`;
+    renderModelSelect();
   }
 
   function modelInUse() {
@@ -255,6 +355,7 @@
     $("#sendBtn").classList.toggle("hidden", on);
     $("#stopBtn").classList.toggle("hidden", !on);
     $("#composer textarea").disabled = on;
+    if (!on) $("#composer textarea").focus();
   }
 
   async function send(text) {
@@ -516,14 +617,11 @@
 
   function openTools() {
     $("#toolsPanel").classList.add("open");
-    $("#sidebar").classList.remove("open");
+    if (isNarrow()) setSidebar(false);
     tools.update();
   }
   function closeTools() { $("#toolsPanel").classList.remove("open"); }
-  function toggleSidebar() {
-    $("#sidebar").classList.toggle("open");
-    $("#toolsPanel").classList.remove("open");
-  }
+  function toolsOpen() { return $("#toolsPanel").classList.contains("open"); }
 
   /* ========================= Settings modal ======================== */
   function openSettings() {
@@ -572,17 +670,23 @@
     renderComposerStatus();
     toast("Settings saved");
     closeSettings();
-    // refresh model list for the new mode (cache is mode-aware)
-    window.API.listModels().then((ids) => { state.models = ids; renderModelSelect(); }).catch(() => {});
+    // refresh the local model list only when local mode is selected
+    if (next.apiMode === "local") {
+      window.API.listModels().then((ids) => { state.models = ids; renderModelSelect(); }).catch(() => {});
+    } else {
+      state.models = [];
+      renderModelSelect();
+    }
     // update active chat model label
     if (state.chat) { state.chat.model = modelInUse(); persistChat(); renderMessages(); }
   }
 
   function resetSettings() {
+    if (!confirm("Reset all settings to defaults?")) return;
     localStorage.removeItem("bioinfogpt_settings_v1");
+    state.models = [];
     toast("Settings reset to defaults");
     closeSettings();
-    renderModelSelect();
     renderComposerStatus();
   }
 
@@ -611,7 +715,7 @@
   function autoGrow() {
     const ta = $("#composer textarea");
     ta.style.height = "auto";
-    ta.style.height = Math.min(220, ta.scrollHeight) + "px";
+    ta.style.height = Math.min(200, ta.scrollHeight) + "px";
   }
 
   /* ============================ Events ============================= */
@@ -631,7 +735,29 @@
     $("#settingsBtn").addEventListener("click", openSettings);
     $("#toolsBtn").addEventListener("click", openTools);
     $("#menuBtn").addEventListener("click", toggleSidebar);
+    $("#closeSidebar").addEventListener("click", () => setSidebar(false));
+    $("#sideNewChat").addEventListener("click", () => { newChat(); if (isNarrow()) setSidebar(false); });
+    $("#scrim").addEventListener("click", () => setSidebar(false));
     $("#closeTools").addEventListener("click", closeTools);
+    $("#themeBtn").addEventListener("click", () => {
+      const next = UI.get().theme === "dark" ? "light" : "dark";
+      applyTheme(next);
+      UI.set({ theme: next });
+    });
+    $("#convoSearch").addEventListener("input", debounce((e) => {
+      state.query = e.target.value;
+      renderSidebar();
+    }, 120));
+    $("#scrollDown").addEventListener("click", () => scrollBottom(true));
+    chatEl().addEventListener("scroll", () => {
+      const c = chatEl();
+      const far = c.scrollHeight - c.scrollTop - c.clientHeight > 220;
+      $("#scrollDown").classList.toggle("hidden", !far);
+    });
+    window.addEventListener("resize", debounce(() => {
+      const scrim = $("#scrim");
+      if (scrim) scrim.hidden = !(sidebarOpen() && isNarrow());
+    }, 150));
     $("#clearConvos").addEventListener("click", () => {
       if (!confirm("Delete all chat history?")) return;
       state.convos = [];
@@ -647,7 +773,6 @@
     $("#resetSettings").addEventListener("click", resetSettings);
     $("#setApiMode").addEventListener("change", (e) => {
       syncSettingsUI({ ...Settings.get(), apiMode: e.target.value });
-      window.API.listModels().then((ids) => { state.models = ids; renderModelSelect(); }).catch(() => {});
     });
     $("#setTemp").addEventListener("input", () => {
       $("#tempVal").textContent = Number($("#setTemp").value).toFixed(2);
@@ -672,9 +797,25 @@
     $("#codonModal").addEventListener("click", (e) => {
       if (e.target.id === "codonModal") e.target.classList.remove("open");
     });
-    // Escape closes modals
+    // Keyboard shortcuts
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") { closeSettings(); closeTools(); $("#codonModal").classList.remove("open"); }
+      const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+      if (e.key === "Escape") {
+        if ($("#codonModal").classList.contains("open")) { $("#codonModal").classList.remove("open"); return; }
+        if ($("#settingsModal").classList.contains("open")) { closeSettings(); return; }
+        if (toolsOpen()) { closeTools(); return; }
+        if (sidebarOpen() && isNarrow()) { setSidebar(false); return; }
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") { e.preventDefault(); toggleSidebar(); }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        if (!sidebarOpen()) setSidebar(true);
+        $("#convoSearch").focus();
+      }
+      if (!typing && e.key === "/") { e.preventDefault(); $("#composer textarea").focus(); }
+    });
+    $("#settingsModal").addEventListener("click", (e) => {
+      if (e.target.id === "settingsModal") closeSettings();
     });
     // Settings change -> refresh status bar
     window.addEventListener("settingschange", renderComposerStatus);
@@ -683,6 +824,12 @@
   /* ============================= Init ============================== */
   async function init() {
     marked.setOptions({ gfm: true, breaks: true });
+
+    // UI prefs: theme + side panel state
+    const ui = UI.get();
+    applyTheme(ui.theme);
+    setSidebar(isNarrow() ? false : ui.sidebar, false);
+
     renderSuggestions();
     bindEvents();
     tools.init();
@@ -698,16 +845,26 @@
     autoGrow();
     $("#composer textarea").focus();
 
-    // Load model list in the background
-    window.API.listModels().then((ids) => {
-      state.models = ids;
-      renderModelSelect();
-    }).catch(() => {});
+    // Only local mode needs a live model list (whatever Ollama/LM Studio has
+    // pulled). Hosted modes use the small curated CONFIG.MODELS list.
+    if (Settings.get().apiMode === "local") {
+      window.API.listModels().then((ids) => {
+        state.models = ids;
+        renderModelSelect();
+      }).catch(() => {});
+    }
+  }
+
+  let booted = false;
+  function boot() {
+    if (booted) return;
+    booted = true;
+    init();
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("DOMContentLoaded", boot, { once: true });
   } else {
-    init();
+    boot();
   }
 })();
