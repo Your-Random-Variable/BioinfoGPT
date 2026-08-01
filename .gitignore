@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Node (only needed if you use wrangler locally)
+node_modules/
+.wrangler/
+worker/.wrangler/
+
+# Local secrets — never commit these
+.env
+.env.*
+*.local

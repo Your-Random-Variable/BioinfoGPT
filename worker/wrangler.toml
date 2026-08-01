@@ -1,0 +1,28 @@
+# ============================================================
+#  BioinfoGPT — Cloudflare Worker configuration
+#  Deploy:  cd worker && npx wrangler deploy
+# ============================================================
+name = "bioinfogpt-worker"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+# ------------------------------------------------------------------
+# Optional shared secret — if set, the site must send it as the
+# `X-App-Secret` header (mirror the value in js/config.js -> APP_SECRET).
+# This stops random bots from draining your Groq quota.
+# ------------------------------------------------------------------
+# APP_SECRET = "replace-with-a-long-random-string"
+
+# Rate limits (per visitor IP) applied in front of every request to Groq.
+RATE_LIMIT_PER_MIN = "20"
+RATE_LIMIT_PER_DAY  = "400"
+
+# ------------------------------------------------------------------
+# Optional: global (across all worker isolates) rate limiting via KV.
+# Create a namespace, then uncomment:
+#   npx wrangler kv namespace create RATE_LIMIT_KV
+# ------------------------------------------------------------------
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "your-namespace-id"
