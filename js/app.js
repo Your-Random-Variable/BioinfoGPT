@@ -167,7 +167,7 @@
     const empty = !state.chat || state.chat.messages.length === 0;
     welcomeEl().classList.toggle("hidden", !empty);
     chatEl().classList.toggle("hidden", empty);
-    const t = $("#chatTitle"); if (t) t.textContent = empty ? t("newChat") : (state.chat.title || t("newChat"));
+    const titleEl = $("#chatTitle"); if (titleEl) titleEl.textContent = empty ? t("newChat") : (state.chat.title || t("newChat"));
   }
   function icon(id, size=14) {
     const svg=document.createElementNS("http://www.w3.org/2000/svg","svg"); svg.setAttribute("width",size); svg.setAttribute("height",size); svg.setAttribute("aria-hidden","true");
@@ -401,7 +401,7 @@
     selectTool(id){
       this.currentTool=id;
       // update active class
-      $(".tool-item").forEach(el=>el.classList.toggle("active", el.dataset.tool===id));
+      $$(".tool-item").forEach(el=>el.classList.toggle("active", el.dataset.tool===id));
       const def=TOOLS_CATALOG.find(t=>t.id===id) || TOOLS_CATALOG[0];
       const titleEl=$("#toolTitle"); if(titleEl) titleEl.textContent=def.title;
       const descEl=$("#toolDesc"); if(descEl) descEl.textContent=def.desc;
@@ -675,7 +675,7 @@
           if(nw) nw.addEventListener('statechange', ()=>{
             if(nw.state==='installed' && navigator.serviceWorker.controller){
               toast('New version available — refreshing...', 'info', 2500);
-              setTimeout(()=>location.reload(true), 1200);
+              setTimeout(()=>window.location.reload(), 1200);
             }
           });
         });
@@ -683,7 +683,7 @@
       navigator.serviceWorker.addEventListener('message', e=>{
         if(e.data && e.data.type==='SW_UPDATED'){
           toast('App updated to '+e.data.version+' — reloading', 'info', 2000);
-          setTimeout(()=>location.reload(true), 1000);
+          setTimeout(()=>window.location.reload(), 1000);
         }
       });
       // Also listen for controller change
@@ -732,22 +732,22 @@
     if(!state.chat||!state.chat.messages.length){ toast("Nothing to share yet"); return; }
     try{
       const data=JSON.stringify(state.chat); const b64=btoa(unescape(encodeURIComponent(data))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
-      const url=`${location.origin}${location.pathname}#share=${b64}`;
+      const url=`${window.location.origin}${window.location.pathname}#share=${b64}`;
       $("#shareLink").value=url; $("#shareModal").classList.add("open");
     }catch{ toast("Share failed","error"); }
   }
   function loadShared(){
-    const hash=location.hash||""; const m=hash.match(/share=([^&]+)/); if(!m) return;
+    const hash=(typeof window!=="undefined" && window.location && window.location.hash) ? window.location.hash : ""; const m=hash.match(/share=([^&]+)/); if(!m) return;
     try{ const b64=m[1].replace(/-/g,"+").replace(/_/g,"/"); const json=decodeURIComponent(escape(atob(b64))); const chat=JSON.parse(json); if(chat&&chat.messages){ state.chat=chat; state.activeId=chat.id; Store.setActive(chat.id); persistChat(); renderAll(); toast("Shared chat loaded"); } }catch{ toast("Invalid share link","error"); }
   }
 
   function bindEvents(){
     // main Chat/Tools tabs
-    $(".main-tab").forEach(btn=>{
+    $$(".main-tab").forEach(btn=>{
       btn.addEventListener("click",()=>{
         const view=btn.dataset.view;
-        $(".main-tab").forEach(b=>b.classList.toggle("active", b.dataset.view===view));
-        $(".view").forEach(v=>v.classList.toggle("active", v.id===view+"View"));
+        $$(".main-tab").forEach(b=>b.classList.toggle("active", b.dataset.view===view));
+        $$(".view").forEach(v=>v.classList.toggle("active", v.id===view+"View"));
         if(view==="tools"){ tools.update(); }
         // update title
         const title=$("#chatTitle");
@@ -759,7 +759,7 @@
     if(toolSearch){
       toolSearch.addEventListener("input", e=>{
         const q=e.target.value.toLowerCase();
-        $(".tool-item").forEach(item=>{
+        $$(".tool-item").forEach(item=>{
           const txt=item.textContent.toLowerCase();
           item.style.display=txt.includes(q)?"":"none";
         });
@@ -816,7 +816,7 @@
           localStorage.clear();
           sessionStorage.clear();
           toast("Cache cleared — reloading", "info", 2000);
-          setTimeout(()=>location.reload(true), 1000);
+          setTimeout(()=>window.location.reload(), 1000);
         }catch(e){
           toast("Clear failed: "+e.message, "error");
         }
