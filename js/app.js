@@ -347,8 +347,26 @@
   }
   function exportPdf(){ window.print(); }
 
+  /* ======================== Tools Catalog - clean, scientific ========================= */
+  const TOOLS_CATALOG=[
+    {id:"info", title:"Overview", desc:"Complete catalog of 12 methods, all local, AI-assisted. Start here.", cat:"general", icon:""},
+    {id:"stats", title:"Sequence Stats", desc:"Length, GC/AT%, Tm (Wallace), MW, purine/pyrimidine, base counts, sliding GC window.", cat:"qc"},
+    {id:"transform", title:"Transform", desc:"Reverse complement (IUPAC-aware), reverse, translate in 3 frames, six-frame, random generators, codon table.", cat:"transform"},
+    {id:"orf", title:"ORF Prediction", desc:"Six-frame ATG→stop scan, 1-based coords with reverse mapping, min AA filter, longest-first, complete flag.", cat:"annotation"},
+    {id:"motif", title:"Motif Search", desc:"IUPAC motifs (R,Y,S,W,K,M,B,D,H,V,N) with overlapping detection via lastIndex, both strands.", cat:"search"},
+    {id:"digest", title:"Restriction Digest", desc:"20 enzymes (EcoRI BamHI HindIII...), cut = match+^offset+1, fragments sum to length, sorted by cuts.", cat:"cloning"},
+    {id:"protein", title:"Protein Properties", desc:"MW, pI by bisect 0-14, GRAVY (Kyte-Doolittle), aliphatic index, extinction 280, charge pH7.", cat:"protein"},
+    {id:"codon", title:"Codon Usage", desc:"Codon counts per frame, relative synonymous usage per AA, RSCU-like bar chart.", cat:"expression"},
+    {id:"primer", title:"Primer Design", desc:"Tm via Wallace/long, GC 40-60%, no 4-mer hairpin, sorted by Tm closeness to 60°C.", cat:"pcr"},
+    {id:"pcr", title:"In-silico PCR", desc:"Finds forward + reverse-complement reverse primers, returns amplicon coords and sequence.", cat:"pcr"},
+    {id:"blast", title:"BLAST-like (k-mer)", desc:"Local k-mer exact match against multi-FASTA DB, score% = matches/(len-k+1), no server.", cat:"search"},
+    {id:"msa", title:"MSA Viewer", desc:"Simple MSA: pad to max len, consensus by plurality, monospace view with IDs.", cat:"alignment"},
+    {id:"dotplot", title:"Dot-plot", desc:"Window w, threshold thr, points where matches>=thr, 300px canvas, accent dots.", cat:"alignment"},
+  ];
+
   /* ======================== Tools ========================= */
   const tools={
+    currentTool: "info",
     records:[], activeSeq:"",
     init(){
       const ta=$("#seqInput"); if(ta) ta.addEventListener("input",debounce(()=>this.update(),250));
@@ -361,7 +379,112 @@
       mappings.forEach(([sel,fn])=>{ const el=$(sel); if(el) el.addEventListener("click",fn); });
       $$(".tab").forEach(btn=>{ btn.addEventListener("click",()=>{ const tab=btn.dataset.tab; $$(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab)); $$(".tabpane").forEach(p=>p.classList.toggle("active",p.dataset.pane===tab)); }); });
       const sel=$("#fastaSel"); if(sel) sel.addEventListener("change",(e)=>{ const idx=Number(e.target.value); if(!isNaN(idx)&&this.records[idx]){ this.activeSeq=this.records[idx].seq; this.updateStatsOnly(); } });
+      // render tools list for new professional UI
+      this.renderList();
+      this.selectTool(this.currentTool||"info");
     },
+    renderList(){
+      const listEl=$("#toolsList"); if(!listEl) return;
+      const q=($("#toolSearch")?.value||"").toLowerCase();
+      listEl.innerHTML="";
+      TOOLS_CATALOG.forEach(tool=>{
+        if(q && !(tool.title.toLowerCase().includes(q) || tool.desc.toLowerCase().includes(q) || tool.id.includes(q))) return;
+        const item=document.createElement("button");
+        item.type="button";
+        item.className="tool-item"+(tool.id===this.currentTool?" active":"");
+        item.dataset.tool=tool.id;
+        item.innerHTML=`<div class="tool-item-title">${this.esc(tool.title)} <span class="chip sm" style="font-size:10px">${this.esc(tool.cat)}</span></div><div class="tool-item-desc">${this.esc(tool.desc)}</div><div class="tool-item-meta"><span>${tool.id}</span><span>local</span><span>AI</span></div>`;
+        item.addEventListener("click",()=>this.selectTool(tool.id));
+        listEl.appendChild(item);
+      });
+    },
+    selectTool(id){
+      this.currentTool=id;
+      // update active class
+      $(".tool-item").forEach(el=>el.classList.toggle("active", el.dataset.tool===id));
+      const def=TOOLS_CATALOG.find(t=>t.id===id) || TOOLS_CATALOG[0];
+      const titleEl=$("#toolTitle"); if(titleEl) titleEl.textContent=def.title;
+      const descEl=$("#toolDesc"); if(descEl) descEl.textContent=def.desc;
+      this.renderControls();
+      // clear outputs
+      const out=$("#toolExtraOut"); if(out) out.innerHTML=`<div class="hint">Ready — ${this.esc(def.title)}: ${this.esc(def.desc)}</div>`;
+      const res=$("#seqResults"); if(res && id==="stats"){ this.updateStatsOnly(); } else if(res){ res.innerHTML=`<div class="hint">Stats for ${this.esc(def.title)} — length ${BIO.clean(this.seq()).length || 0}</div>`; }
+    },
+    renderControls(){
+      const cEl=$("#toolsControls"); if(!cEl) return;
+      const id=this.currentTool;
+      let html="";
+      switch(id){
+        case "info":
+          html=`<div class="tool-info-hero"><div class="chip" style="background:var(--text); color:var(--bg); border:none; font-weight:700;">12 Modules • Local • AI-assisted</div><h4 style="margin:8px 0 4px; font-size:14px;">Bioinformatics Workbench — Method Reference</h4><p class="hint" style="margin:0">All methods run client-side (no server). Click any method on left to load its controls. Each result has <b>Explain with AI</b> to interpret using trusted local counts.</p></div>`;
+          break;
+        case "stats":
+          html=`<div class="hint">Stats update automatically from sequence input. No extra controls.</div>`;
+          break;
+        case "transform":
+          html=`<div class="ctl-row"><button id="btnRC" class="btn-ghost">Reverse complement</button><button id="btnRev" class="btn-ghost">Reverse</button></div>
+          <div class="ctl-row"><label>Frame <select id="frameSel"><option value="0">+1</option><option value="1">+2</option><option value="2">+3</option></select></label><button id="btnTranslate" class="btn-ghost">Translate</button><button id="btnSixFrame" class="btn-ghost">Six-frame</button></div>
+          <div class="ctl-row"><label>Length <input id="seqLen" type="number" min="1" max="5000" value="100" /></label><button id="btnRandDNA" class="btn-ghost">Random DNA</button><button id="btnRandRNA" class="btn-ghost">RNA</button><button id="btnRandProt" class="btn-ghost">Protein</button></div>
+          <div class="ctl-row"><button id="btnCodonTable" class="btn-ghost">Codon table</button></div>`;
+          break;
+        case "orf":
+          html=`<div class="ctl-row"><label>Min AA <input id="orfMin" type="number" min="1" max="5000" value="30" /></label><button id="btnORF" class="btn-ghost">Find ORFs</button></div>`;
+          break;
+        case "motif":
+          html=`<div class="ctl-row"><input id="motifIn" type="text" class="grow" placeholder="Motif IUPAC e.g. GAATTC" /><button id="btnMotif" class="btn-ghost">Find motif</button></div>`;
+          break;
+        case "digest":
+          html=`<div class="ctl-row"><button id="btnDigest" class="btn-ghost">Restriction map (20 enzymes)</button></div>`;
+          break;
+        case "protein":
+          html=`<div class="ctl-row"><button id="btnProt" class="btn-ghost">Protein properties</button></div>`;
+          break;
+        case "codon":
+          html=`<div class="ctl-row"><button id="btnCodonUsage" class="btn-ghost">Codon usage</button></div>`;
+          break;
+        case "primer":
+          html=`<div class="ctl-row"><label>Min <input id="primerMinLen" type="number" value="18" min="15" max="30" style="width:60px"/></label><label>Max <input id="primerMaxLen" type="number" value="24" min="18" max="35" style="width:60px"/></label><button id="btnPrimer" class="btn-ghost">Design primers</button></div>`;
+          break;
+        case "pcr":
+          html=`<div class="ctl-row"><input id="pcrFwd" type="text" class="grow" placeholder="Forward primer" /><input id="pcrRev" type="text" class="grow" placeholder="Reverse primer" /><button id="btnPCR" class="btn-ghost">In-silico PCR</button></div>`;
+          break;
+        case "blast":
+          html=`<div class="ctl-row"><input id="blastQuery" type="text" class="grow" placeholder="Query (uses current seq if empty)" /><label>k <input id="blastK" type="number" value="6" min="3" max="10" style="width:50px"/></label><button id="btnBlast" class="btn-ghost">BLAST-like</button></div>`;
+          break;
+        case "msa":
+          html=`<div class="ctl-row"><button id="btnMSA" class="btn-ghost">Align (simple MSA)</button></div><div class="hint">Paste multi-FASTA (≥2 records) in main input.</div>`;
+          break;
+        case "dotplot":
+          html=`<div class="ctl-row"><input id="dotSeq2" type="text" class="grow" placeholder="Second seq (or 2nd FASTA record)" /><label>Win <input id="dotWin" type="number" value="10" min="3" max="20" style="width:50px"/></label><label>Thr <input id="dotThr" type="number" value="8" min="1" max="20" style="width:50px"/></label><button id="btnDot" class="btn-ghost">Dot-plot</button></div><canvas id="dotCanvas" width="320" height="320" style="max-width:100%; border:1px solid var(--border-soft); border-radius:10px; display:none; margin-top:8px;"></canvas>`;
+          break;
+        default:
+          html=`<div class="hint">No controls for ${this.esc(id)}</div>`;
+      }
+      cEl.innerHTML=html;
+      // rebind buttons for this tool
+      const map=[
+        ["#btnRC",()=>this.apply(s=>BIO.reverseComplement(s))],
+        ["#btnRev",()=>this.apply(s=>BIO.reverse(s))],
+        ["#btnTranslate",()=>this.translate()],
+        ["#btnSixFrame",()=>this.sixFrame()],
+        ["#btnRandDNA",()=>this.random("DNA")],
+        ["#btnRandRNA",()=>this.random("RNA")],
+        ["#btnRandProt",()=>this.random("protein")],
+        ["#btnCodonTable",()=>this.codonTable()],
+        ["#btnORF",()=>this.orfs()],
+        ["#btnMotif",()=>this.motif()],
+        ["#btnDigest",()=>this.digest()],
+        ["#btnProt",()=>this.protein()],
+        ["#btnCodonUsage",()=>this.codonUsage()],
+        ["#btnPrimer",()=>this.primer()],
+        ["#btnPCR",()=>this.pcr()],
+        ["#btnBlast",()=>this.blast()],
+        ["#btnMSA",()=>this.msa()],
+        ["#btnDot",()=>this.dotplot()],
+      ];
+      map.forEach(([sel,fn])=>{ const e=$(sel); if(e) e.addEventListener("click",fn); });
+    },
+
     seq(){ if(this.records.length>1&&this.activeSeq) return this.activeSeq; const ta=$("#seqInput"); return ta?ta.value.trim():""; },
     raw(){ const ta=$("#seqInput"); return ta?ta.value:""; },
     esc(s){ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); },
@@ -595,6 +718,45 @@
   }
 
   function bindEvents(){
+    // main Chat/Tools tabs
+    $(".main-tab").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const view=btn.dataset.view;
+        $(".main-tab").forEach(b=>b.classList.toggle("active", b.dataset.view===view));
+        $(".view").forEach(v=>v.classList.toggle("active", v.id===view+"View"));
+        if(view==="tools"){ tools.update(); }
+        // update title
+        const title=$("#chatTitle");
+        if(title) title.textContent=view==="tools"?"Tools — Methods":"New chat";
+      });
+    });
+    // tool search filter
+    const toolSearch=$("#toolSearch");
+    if(toolSearch){
+      toolSearch.addEventListener("input", e=>{
+        const q=e.target.value.toLowerCase();
+        $(".tool-item").forEach(item=>{
+          const txt=item.textContent.toLowerCase();
+          item.style.display=txt.includes(q)?"":"none";
+        });
+      });
+    }
+    // tool info button
+    const toolInfoBtn=$("#toolInfoBtn");
+    if(toolInfoBtn){
+      toolInfoBtn.addEventListener("click",()=>{
+        const active=tools.currentTool||"info";
+        // show info modal or scroll to info
+        const infoId="info";
+        const item=document.querySelector(`.tool-item[data-tool="${infoId}"]`);
+        if(item) item.click();
+      });
+    }
+    const toolAiBtn=$("#toolAiBtn");
+    if(toolAiBtn){
+      toolAiBtn.addEventListener("click",()=>tools.sendToChat());
+    }
+
     const sendBtn=$("#sendBtn"); if(sendBtn) sendBtn.addEventListener("click",()=>send());
     const stopBtn=$("#stopBtn"); if(stopBtn) stopBtn.addEventListener("click",stop);
     const newChatBtn=$("#newChatBtn"); if(newChatBtn) newChatBtn.addEventListener("click",newChat);

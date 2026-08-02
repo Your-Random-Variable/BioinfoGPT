@@ -3,92 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BioinfoGPT — AI Assistant for Bioinformatics</title>
-  <meta name="description" content="BioinfoGPT: AI chat for bioinformatics — sequence tools, primers, BLAST, MSA, dot-plot, voice, file upload, PWA, multilingual. Free Groq/GitHub/OpenRouter/Gemini." />
-  <meta name="theme-color" content="#080b16" />
+  <title>BioinfoGPT — Bioinformatics Workbench</title>
+  <meta name="description" content="BioinfoGPT: professional bioinformatics workbench — chat, sequence analysis, primer design, BLAST-like search, MSA. Clean, scientific, offline-capable." />
+  <meta name="theme-color" content="#0e1410" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="vendor/github-dark.min.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <!-- Shared SVG symbols -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
-      <linearGradient id="gradHelix" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="var(--accent)" />
-        <stop offset="1" stop-color="var(--accent-2)" />
-      </linearGradient>
-      <symbol id="icoHelix" viewBox="0 0 48 48">
-        <path d="M24 3 C17 11 17 19 24 27 C31 19 31 11 24 3 Z" fill="none" stroke="url(#gradHelix)" stroke-width="3.2" stroke-linecap="round"/>
-        <path d="M24 21 C17 29 17 37 24 45 C31 37 31 29 24 21 Z" fill="none" stroke="url(#gradHelix)" stroke-width="3.2" stroke-linecap="round"/>
-        <line x1="19.5" y1="12" x2="28.5" y2="16" stroke="url(#gradHelix)" stroke-width="3.2" stroke-linecap="round"/>
-        <line x1="21" y1="23.5" x2="27" y2="25.5" stroke="url(#gradHelix)" stroke-width="3.2" stroke-linecap="round"/>
-        <line x1="19.5" y1="33" x2="28.5" y2="37" stroke="url(#gradHelix)" stroke-width="3.2" stroke-linecap="round"/>
-      </symbol>
-      <symbol id="icoMenu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
-      <symbol id="icoClose" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
-      <symbol id="icoPlus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
-      <symbol id="icoGear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M19.4 13.5a7.9 7.9 0 000-3l1.7-1.3-1.8-3.1-2 .8a7.8 7.8 0 00-2.6-1.5L14.4 3h-3.6l-.3 2.4a7.8 7.8 0 00-2.6 1.5l-2-.8L4.1 9.2l1.7 1.3a7.9 7.9 0 000 3l-1.7 1.3 1.8 3.1 2-.8a7.8 7.8 0 002.6 1.5l.3 2.4h3.6l.3-2.4a7.8 7.8 0 002.6-1.5l2 .8 1.8-3.1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
-      <symbol id="icoDownload" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 19h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icoFlask" viewBox="0 0 24 24"><path d="M9.5 3h5M10.5 3v6.2L5.6 17a2.2 2.2 0 001.9 3.4h9a2.2 2.2 0 001.9-3.4l-4.9-7.8V3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.6 14.2h8.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
-      <symbol id="icoSun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
-      <symbol id="icoMoon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
-      <symbol id="icoTrash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13M10 11v6M14 11v6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icoSearch" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
-      <symbol id="icoSend" viewBox="0 0 24 24"><path d="M4.5 12h13m0 0l-5-5m5 5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icoStop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/></symbol>
-      <symbol id="icoCopy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M15 5.5A1.5 1.5 0 0013.5 4H6a2 2 0 00-2 2v7.5A1.5 1.5 0 005.5 15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
-      <symbol id="icoRefresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 11-2.6-5.9M20 4v4h-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icoDown" viewBox="0 0 24 24"><path d="M6 10l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icoMic" viewBox="0 0 24 24"><path d="M12 14a3 3 0 003-3V7a3 3 0 10-6 0v4a3 3 0 003 3z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M19 10v1a7 7 0 01-14 0v-1M12 18v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
-      <symbol id="icoUpload" viewBox="0 0 24 24"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 20h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icoPrompt" viewBox="0 0 24 24"><path d="M8 6h8M8 10h8M8 14h5M4 4.5A1.5 1.5 0 015.5 3h13A1.5 1.5 0 0120 4.5v15A1.5 1.5 0 0118.5 21h-13A1.5 1.5 0 014 19.5v-15z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
-      <symbol id="icoShare" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="6" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="18" cy="19" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8.2 11.2l7.6-4.6M8.2 12.8l7.6 4.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
-      <symbol id="icoLang" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
-      <symbol id="icoVolume" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15.5 8.5a5 5 0 010 7M18 6a9 9 0 010 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
-      <symbol id="icoPrimer" viewBox="0 0 24 24"><path d="M4 7h10M4 12h10M4 17h10M16 6l4 2.5L16 11V6zM20 16l-4 2v-4l4 2z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icoBlast" viewBox="0 0 24 24"><path d="M4 7h8M4 12h8M4 17h5M14 8l6 4-6 4V8z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="icoMsa" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="8" cy="6" r="1.5" fill="currentColor"/><circle cx="12" cy="10" r="1.5" fill="currentColor"/></symbol>
-      <symbol id="icoDot" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="9" r="1.3" fill="currentColor"/><circle cx="15" cy="15" r="1.3" fill="currentColor"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="i-send" viewBox="0 0 24 24"><path d="M5 12l14-7-4 7 4 7L5 12z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
     </defs>
   </svg>
 
   <div id="app">
-    <aside id="sidebar" aria-label="Conversation history">
+    <aside id="sidebar" aria-label="Conversations">
       <div class="side-top">
         <div class="side-brand">
-          <svg class="brand-mark" width="26" height="26" aria-hidden="true"><use href="#icoHelix" /></svg>
-          <span class="brand-name">Bioinfo<span>GPT</span></span>
+          <span class="brand-mark">BG</span>
+          <span class="brand-name">BioinfoGPT</span>
+          <span class="brand-sub">Workbench</span>
         </div>
-        <button id="closeSidebar" class="icon-btn ghost" title="Close panel (Ctrl+B)" aria-label="Close side panel">
-          <svg width="18" height="18" aria-hidden="true"><use href="#icoClose" /></svg>
-        </button>
+        <button id="closeSidebar" class="icon-btn ghost" aria-label="Close">×</button>
       </div>
 
-      <button id="sideNewChat" class="btn-new">
-        <svg width="16" height="16" aria-hidden="true"><use href="#icoPlus" /></svg> <span data-i18n="newChat">New chat</span>
-      </button>
+      <button id="sideNewChat" class="btn-primary full">New chat</button>
 
       <div class="side-search">
-        <svg width="15" height="15" aria-hidden="true"><use href="#icoSearch" /></svg>
-        <input id="convoSearch" type="search" placeholder="Search chats…" aria-label="Search conversations" />
+        <svg width="14" height="14" aria-hidden="true"><use href="#i-search"/></svg>
+        <input id="convoSearch" type="search" placeholder="Search conversations" aria-label="Search" />
       </div>
 
-      <div class="side-label" data-i18n="recent">Recent</div>
+      <div class="side-label">History</div>
       <div id="convos" role="list"></div>
-      <div class="side-empty" id="sideEmpty">No conversations yet</div>
+      <div class="side-empty" id="sideEmpty">No conversations</div>
 
       <div class="side-foot">
-        <button id="clearConvos" class="btn-ghost danger sm">
-          <svg width="14" height="14" aria-hidden="true"><use href="#icoTrash" /></svg> <span data-i18n="clearHistory">Clear history</span>
-        </button>
-        <div class="side-foot-row">
-          <button id="langToggle" class="btn-ghost sm" title="Toggle Hindi/English">
-            <svg width="14" height="14" aria-hidden="true"><use href="#icoLang" /></svg> <span id="langLabel">हि / En</span>
-          </button>
-          <button id="shortcutsBtn" class="btn-ghost sm" title="Shortcuts (?)">?</button>
-        </div>
+        <button id="clearConvos" class="btn-ghost danger sm full">Clear history</button>
       </div>
     </aside>
 
@@ -97,489 +55,158 @@
     <div id="col">
       <header id="topbar">
         <div class="bar-left">
-          <button id="menuBtn" class="icon-btn" title="Toggle side panel (Ctrl+B)" aria-label="Toggle side panel" aria-expanded="true">
-            <svg width="19" height="19" aria-hidden="true"><use href="#icoMenu" /></svg>
-          </button>
+          <button id="menuBtn" class="icon-btn ghost" aria-label="Toggle sidebar">☰</button>
+          <nav class="main-tabs" aria-label="Primary">
+            <button class="main-tab active" data-view="chat" id="tabChat">Chat</button>
+            <button class="main-tab" data-view="tools" id="tabTools">Tools <span class="tab-count">12</span></button>
+          </nav>
           <div class="title-block">
             <h1 id="chatTitle">New chat</h1>
             <p id="composerStatus"></p>
           </div>
         </div>
         <div class="bar-right">
-          <div id="modelPill" class="pill" title="Active model">
-            <span class="dot"></span>
+          <div class="model-pill">
             <select id="modelSelect" aria-label="Model"></select>
           </div>
-          <button id="promptLibBtn" class="icon-btn" title="Prompt library" aria-label="Prompt library">
-            <svg width="18" height="18" aria-hidden="true"><use href="#icoPrompt" /></svg>
-          </button>
-          <button id="shareBtn" class="icon-btn" title="Share chat link" aria-label="Share chat">
-            <svg width="18" height="18" aria-hidden="true"><use href="#icoShare" /></svg>
-          </button>
-          <button id="toolsBtn" class="icon-btn" title="Sequence tools" aria-label="Sequence tools">
-            <svg width="18" height="18" aria-hidden="true"><use href="#icoFlask" /></svg>
-          </button>
-          <button id="exportBtn" class="icon-btn" title="Export chat as Markdown" aria-label="Export chat">
-            <svg width="18" height="18" aria-hidden="true"><use href="#icoDownload" /></svg>
-          </button>
-          <button id="themeBtn" class="icon-btn" title="Toggle light / dark" aria-label="Toggle theme">
-            <svg class="ico-dark" width="18" height="18" aria-hidden="true"><use href="#icoMoon" /></svg>
-            <svg class="ico-light" width="18" height="18" aria-hidden="true"><use href="#icoSun" /></svg>
-          </button>
-          <button id="newChatBtn" class="icon-btn" title="New chat" aria-label="New chat">
-            <svg width="18" height="18" aria-hidden="true"><use href="#icoPlus" /></svg>
-          </button>
-          <button id="settingsBtn" class="icon-btn" title="Settings" aria-label="Settings">
-            <svg width="18" height="18" aria-hidden="true"><use href="#icoGear" /></svg>
-          </button>
+          <button id="exportBtn" class="btn-ghost sm" title="Export Markdown">Export</button>
+          <button id="shareBtn" class="btn-ghost sm" title="Share link">Share</button>
+          <button id="promptLibBtn" class="btn-ghost sm" title="Prompt library">Prompts</button>
+          <button id="themeBtn" class="icon-btn ghost" title="Theme">◐</button>
+          <button id="settingsBtn" class="icon-btn ghost" title="Settings">Settings</button>
         </div>
       </header>
 
       <main id="main">
         <div id="genBar" aria-hidden="true"></div>
-        <section id="welcome">
-          <div class="hero">
-            <div class="hero-logo"><svg width="60" height="60" aria-hidden="true"><use href="#icoHelix" /></svg></div>
-            <h2 data-i18n="heroTitle">Ask anything in bioinformatics</h2>
-            <p class="hero-sub" data-i18n="heroSub">Answers, runnable code (Python / R / shell) and built-in sequence tools — fast and free. Drag-drop FASTA, voice input, offline PWA, Hindi/English.</p>
-            <div id="suggestions"></div>
-            <div class="hero-foot">
-              <button id="heroToolsBtn" class="btn-primary">
-                <svg width="16" height="16" aria-hidden="true"><use href="#icoFlask" /></svg> <span data-i18n="seqTools">Sequence tools</span>
-              </button>
-              <span class="hero-note" data-i18n="heroNote">Tip: paste a FASTA or drag-drop file, or use mic.</span>
+
+        <!-- Chat View -->
+        <section id="chatView" class="view active">
+          <div id="welcome">
+            <div class="hero">
+              <h2>Bioinformatics Workbench</h2>
+              <p class="hero-sub">Professional, offline-capable environment for sequence analysis and NGS. No tracking. All tools run locally except LLM inference. Select <strong>Tools</strong> for the full method catalog.</p>
+              <div id="suggestions" class="suggestions-grid"></div>
+              <div class="hero-foot">
+                <span class="mono muted">Supports FASTA, FASTQ, GenBank, CSV • Drag-drop • Voice • PWA • EN/HI</span>
+              </div>
             </div>
+          </div>
+          <div id="chat" role="log" aria-live="polite"></div>
+          <button id="scrollDown" class="scroll-down hidden" aria-label="Scroll">↓</button>
+          <div id="composerWrap">
+            <div id="composer">
+              <button id="fileBtn" class="icon-btn ghost sm" title="Attach file">Attach</button>
+              <textarea id="input" rows="1" placeholder="Ask about genomics, phylogenetics, or paste a sequence…" aria-label="Message"></textarea>
+              <button id="voiceBtn" class="icon-btn ghost sm" title="Voice input">Mic</button>
+              <button id="sendBtn" class="btn-primary">Send</button>
+              <button id="stopBtn" class="btn-primary danger hidden">Stop</button>
+            </div>
+            <div id="composerHints"><span class="mono muted">Enter to send • Shift+Enter newline • ? help • Drag file to upload</span><button id="clearChatBtn" class="btn-ghost sm">Clear</button></div>
           </div>
         </section>
 
-        <section id="chat" role="log" aria-live="polite" aria-label="Chat"></section>
+        <!-- Tools View - Full screen professional like Claude -->
+        <section id="toolsView" class="view">
+          <div id="toolsLayout">
+            <nav id="toolsNav" aria-label="Tools">
+              <div class="tools-nav-head">
+                <h3>Methods</h3>
+                <span class="muted mono small">12 modules • local • AI-assisted</span>
+                <input id="toolSearch" type="search" placeholder="Filter methods…" aria-label="Filter tools" />
+              </div>
+              <div id="toolsList"></div>
+              <div class="tools-nav-foot">
+                <div class="muted small">All computations are client-side. AI only explains — it does not recompute counts flagged as trusted.</div>
+              </div>
+            </nav>
+            <div id="toolsWorkbench">
+              <div id="toolsWorkbenchHead">
+                <div>
+                  <h2 id="toolTitle">Select a method</h2>
+                  <p id="toolDesc" class="muted">Choose a method from the left to begin analysis.</p>
+                </div>
+                <div class="workbench-actions">
+                  <button id="toolInfoBtn" class="btn-ghost sm">Info</button>
+                  <button id="toolAiBtn" class="btn-primary sm">Explain with AI</button>
+                </div>
+              </div>
 
-        <button id="scrollDown" class="scroll-down hidden" aria-label="Scroll to latest">
-          <svg width="18" height="18" aria-hidden="true"><use href="#icoDown" /></svg>
-        </button>
+              <div id="toolsInputs">
+                <textarea id="seqInput" rows="6" spellcheck="false" placeholder="Paste sequence(s) here. Supports multi-record FASTA. Drag-drop FASTA/FASTQ/GenBank/CSV."></textarea>
+                <div id="fastaBar" class="fasta-bar hidden">
+                  <select id="fastaSel"></select>
+                  <span id="fastaCount" class="mono small muted"></span>
+                </div>
+              </div>
 
-        <div id="composerWrap">
-          <div id="composer">
-            <button id="fileBtn" class="icon-btn ghost" title="Upload file (FASTA, FASTQ, GenBank, CSV)" aria-label="Upload file">
-              <svg width="18" height="18" aria-hidden="true"><use href="#icoUpload" /></svg>
-            </button>
-            <textarea id="input" rows="1" placeholder="Ask about genomics, NGS, phylogenetics… or paste a sequence" aria-label="Message"></textarea>
-            <div class="composer-actions">
-              <button id="voiceBtn" class="icon-btn ghost" title="Voice input (mic)" aria-label="Voice input">
-                <svg width="18" height="18" aria-hidden="true"><use href="#icoMic" /></svg>
-              </button>
-              <button id="sendBtn" class="btn-send" title="Send" aria-label="Send">
-                <svg width="19" height="19" aria-hidden="true"><use href="#icoSend" /></svg>
-              </button>
-              <button id="stopBtn" class="btn-send stop hidden" title="Stop generating" aria-label="Stop">
-                <svg width="19" height="19" aria-hidden="true"><use href="#icoStop" /></svg>
-              </button>
+              <div id="toolsControls"></div>
+              <div id="toolsOutput" class="tools-output">
+                <div id="seqResults" class="hint">Select a method. Output will appear here with complete metrics and AI explanation option.</div>
+                <div id="toolExtraOut"></div>
+              </div>
+
+              <div id="seqResultWrap" class="hidden" style="margin-top:16px;">
+                <div class="res-head"><span class="mono small muted">RESULT</span><button id="btnCopyResult" class="btn-ghost sm">Copy</button></div>
+                <pre id="seqResultText"></pre>
+              </div>
             </div>
           </div>
-          <div id="composerHints">
-            <button id="clearChatBtn" class="btn-ghost sm" data-i18n="clearChat">Clear chat</button>
-            <span><kbd>Enter</kbd> <span data-i18n="send">send</span> · <kbd>Shift</kbd>+<kbd>Enter</kbd> newline · <kbd>?</kbd> shortcuts · 🎙️ mic · 📎 file drop</span>
-          </div>
-        </div>
+        </section>
       </main>
     </div>
   </div>
 
-  <!-- Drag & drop overlay -->
-  <div id="dropOverlay" class="drop-overlay hidden" aria-hidden="true">
-    <div class="drop-box">
-      <svg width="48" height="48" aria-hidden="true"><use href="#icoUpload" /></svg>
-      <div data-i18n="dropFile">Drop FASTA / FASTQ / GenBank / CSV file here</div>
-      <small>Supports .fa, .fasta, .fq, .fastq, .gb, .gbk, .txt, .csv</small>
+  <div id="dropOverlay" class="drop-overlay hidden"><div class="drop-box"><div>Drop file for analysis</div><small>FASTA • FASTQ • GenBank • CSV • TXT</small></div></div>
+  <input type="file" id="fileInput" hidden accept=".fasta,.fa,.fastq,.fq,.gb,.gbk,.txt,.csv,.json" />
+
+  <!-- Modals -->
+  <div id="settingsModal" class="modal"><div class="modal-card"><div class="modal-head"><h3>Settings</h3><button id="closeSettings" class="icon-btn ghost">×</button></div>
+    <div class="modal-body">
+      <fieldset><legend>Provider</legend>
+        <label class="field"><span>Mode</span><select id="setApiMode">
+          <option value="groq">Groq — built-in</option>
+          <option value="byok">Groq — own key (14.4k/day)</option>
+          <option value="pollinations">Pollinations — free</option>
+          <option value="gemini">Gemini — 1500/day</option>
+          <option value="mistral">Mistral — 1B/month</option>
+          <option value="github">GitHub Models — 150/day</option>
+          <option value="openrouter">OpenRouter — free</option>
+          <option value="proxy">Proxy (Worker)</option>
+          <option value="local">Local (Ollama) offline</option>
+        </select></label>
+        <label class="field" id="proxyRow"><span>Worker URL</span><input id="setProxyUrl" type="url" /></label>
+        <label class="field" id="groqKeyRow"><span>Groq key</span><input id="setGroqKey" type="password" /></label>
+        <label class="field" id="githubRow"><span>GitHub token</span><input id="setGithubKey" type="password" /></label>
+        <label class="field" id="openrouterRow"><span>OpenRouter key</span><input id="setOpenrouterKey" type="password" /></label>
+        <label class="field" id="cerebrasRow"><span>Cerebras key</span><input id="setCerebrasKey" type="password" /></label>
+        <label class="field" id="geminiRow"><span>Gemini key</span><input id="setGeminiKey" type="password" /></label>
+        <label class="field" id="mistralRow"><span>Mistral key</span><input id="setMistralKey" type="password" /></label>
+        <label class="field" id="pollinationsRow"><span>Pollinations key</span><input id="setPollinationsKey" type="password" /></label>
+        <label class="field" id="localRow"><span>Local base URL</span><input id="setLocalUrl" type="url" /></label>
+        <label class="field" id="localKeyRow"><span>Local key</span><input id="setLocalKey" type="password" /></label>
+      </fieldset>
+      <fieldset><legend>Interface</legend>
+        <label class="field"><span>Language</span><select id="setLang"><option value="en">English</option><option value="hi">हिन्दी</option></select></label>
+        <label class="check"><input id="setHighContrast" type="checkbox" /> High contrast</label>
+        <label class="check"><input id="setLargeText" type="checkbox" /> Large text</label>
+      </fieldset>
+      <fieldset><legend>Generation</legend>
+        <label class="field"><span>Custom model ID</span><input id="setCustomModel" type="text" /></label>
+        <label class="field"><span>Temperature: <b id="tempVal">0.70</b></span><input id="setTemp" type="range" min="0" max="1.5" step="0.05" value="0.7" /></label>
+        <label class="field"><span>Max tokens</span><input id="setMaxTokens" type="number" min="256" max="8192" step="256" value="4096" /></label>
+        <label class="check"><input id="setStreaming" type="checkbox" checked /> Streaming</label>
+        <label class="check"><input id="setSmart" type="checkbox" checked /> Bioinformatics smart defaults</label>
+      </fieldset>
+      <fieldset><legend>System prompt</legend><label class="field"><span>Persona</span><textarea id="setSystem" rows="4"></textarea></label></fieldset>
     </div>
-  </div>
-  <input type="file" id="fileInput" hidden accept=".fasta,.fa,.fas,.fastq,.fq,.gb,.gbk,.txt,.csv,.json" />
+    <div class="modal-foot"><button id="resetSettings" class="btn-ghost danger">Reset</button><button id="saveSettings" class="btn-primary">Save</button></div>
+  </div></div>
 
-  <!-- Tools panel -->
-  <div id="toolsPanel" class="drawer" aria-label="Sequence tools">
-    <div class="drawer-head">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <h3><svg width="17" height="17" aria-hidden="true"><use href="#icoFlask" /></svg> <span data-i18n="seqTools">Sequence tools</span></h3>
-        <span class="chip" style="margin:0; font-size:10px; background:var(--accent-soft); color:var(--accent); border-color:var(--accent);">AI-POWERED</span>
-      </div>
-      <div style="display:flex; gap:6px;">
-        <button id="toolsFullscreen" class="icon-btn ghost" title="Fullscreen tools" aria-label="Fullscreen">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 3H5a2 2 0 00-2 2v3M16 3h3a2 2 0 012 2v3M8 21H5a2 2 0 01-2-2v-3M16 21h3a2 2 0 002-2v-3"/></svg>
-        </button>
-        <button id="closeTools" class="icon-btn ghost" aria-label="Close sequence tools">
-          <svg width="18" height="18" aria-hidden="true"><use href="#icoClose" /></svg>
-        </button>
-      </div>
-    </div>
-    <div class="drawer-body">
-      <textarea id="seqInput" rows="6" spellcheck="false" placeholder="Paste a DNA, RNA or protein sequence here… supports multi-record FASTA, whitespace/digits/hyphens ignored. Or drag-drop file."></textarea>
-      <div id="fastaBar" class="fasta-bar hidden">
-        <select id="fastaSel"></select>
-        <span id="fastaCount" class="hint"></span>
-      </div>
-
-      <nav class="tabs" aria-label="Tool tabs">
-        <button class="tab active" data-tab="info" title="Complete info about all tools"><svg width="12" height="12" style="margin-right:4px"><use href="#icoPrompt"/></svg>Info</button>
-        <button class="tab" data-tab="stats">Stats</button>
-        <button class="tab" data-tab="transform">Transform</button>
-        <button class="tab" data-tab="orf">ORF</button>
-        <button class="tab" data-tab="motif">Motif</button>
-        <button class="tab" data-tab="digest">Digest</button>
-        <button class="tab" data-tab="protein">Protein</button>
-        <button class="tab" data-tab="codon">Codon</button>
-        <button class="tab" data-tab="primer"><svg width="10" height="10"><use href="#icoPrimer"/></svg> Primer</button>
-        <button class="tab" data-tab="pcr">PCR</button>
-        <button class="tab" data-tab="blast"><svg width="10" height="10"><use href="#icoBlast"/></svg> BLAST</button>
-        <button class="tab" data-tab="msa"><svg width="10" height="10"><use href="#icoMsa"/></svg> MSA</button>
-        <button class="tab" data-tab="dotplot"><svg width="10" height="10"><use href="#icoDot"/></svg> Dot-plot</button>
-      </nav>
-
-      <section class="tabpane active" data-pane="info">
-        <div class="tool-info-hero">
-          <div class="chip" style="background:var(--grad); color:#05121a; border:none; font-weight:700;">🧬 12 Tools + AI</div>
-          <h4 style="margin:8px 0 4px; font-size:14px;">Complete Bioinformatics Toolkit</h4>
-          <p class="hint" style="margin:0">All tools run 100% locally in your browser (no server). Click <b>AI</b> on any result for deep explanation. Full-screen mode uses entire screen for analysis.</p>
-        </div>
-        <div style="display:grid; gap:8px;">
-          <div class="tool-card"><b>📊 Stats</b> — Length, GC/AT%, Tm, MW, purines/pyrimidines, base counts, sliding-window GC. <i>AI: explains GC bias & Tm meaning.</i> <span class="chip sm">DNA/RNA/Protein</span></div>
-          <div class="tool-card"><b>🔄 Transform</b> — Reverse complement (IUPAC), reverse, translate (+1/+2/+3), six-frame, random DNA/RNA/protein, codon table. <i>AI: writes Biopython code.</i></div>
-          <div class="tool-card"><b>🔍 ORF</b> — Scans all 6 frames ATG→stop, 1-based coords mapped for reverse strand, filter by min AA, longest-first. <i>AI: annotates longest ORF function.</i></div>
-          <div class="tool-card"><b>🧩 Motif (IUPAC)</b> — Finds motifs with ambiguity (R,Y,S,W,K,M,B,D,H,V,N), overlapping hits (AAA in AAAA =2), both strands. <i>AI: biological role of motif.</i></div>
-          <div class="tool-card"><b>✂️ Digest</b> — 20 enzymes (EcoRI BamHI HindIII NotI XhoI SalI PstI SmaI KpnI SacI XbaI SpeI NcoI NdeI EcoRV HaeIII AluI TaqI BglII ApaI), cut = index+^offset+1, fragments sum=length. <i>AI: designs cloning strategy.</i></div>
-          <div class="tool-card"><b>🧬 Protein</b> — MW (sum- (n-1)*18.015), pI (bisect 0-14), GRAVY (Kyte-Doolittle), aliphatic index, extinction 280 (W*5500+Y*1490+C*125), charge pH7. <i>AI: solubility & stability.</i></div>
-          <div class="tool-card"><b>🔤 Codon</b> — Counts codons per frame, synonymous usage (fraction per AA), RSCU-like table + bar. <i>AI: codon optimization.</i></div>
-          <div class="tool-card"><b>🧪 Primer</b> — Designs 18-24mers, Tm 55-65°C, GC 40-60%, no 4mer hairpin, sorted by Tm. <i>AI: checks dimer & suggests PCR conditions.</i></div>
-          <div class="tool-card"><b>🧫 PCR</b> — In-silico PCR: finds fwd + rev-comp rev, returns amplicon coords & seq. <i>AI: predicts PCR success.</i></div>
-          <div class="tool-card"><b>💥 BLAST-like</b> — k-mer (k=3-10) exact match vs multi-FASTA DB, score% = matches/(len-k+1). Local, no server. <i>AI: interprets hits.</i></div>
-          <div class="tool-card"><b>📐 MSA</b> — Pads to max length, consensus (most common per column), displays ID + aligned. <i>AI: finds conserved regions.</i></div>
-          <div class="tool-card"><b>⚫ Dot-plot</b> — Window w=10 thr=8, points where matches>=thr, canvas 300x300, accent dots. <i>AI: detects repeats/inversions.</i></div>
-        </div>
-        <div class="hint" style="margin-top:8px; padding:8px; background:var(--surface-2); border-radius:8px; border:1px solid var(--border-soft)">
-          <b>AI Integration:</b> Every tool has <span class="chip sm" style="background:var(--grad); color:#000; border:none;">Explain with AI</span> — sends locally computed values (trust these, don't recompute) to LLM to prevent hallucination. Top button <b>Analyze with AI ↗</b> sends full context.
-        </div>
-      </section>
-
-      <section class="tabpane" data-pane="stats">
-        <div id="seqResults" class="hint">Paste or type a sequence above. Whitespace, digits and hyphens are ignored.</div>
-      </section>
-
-      <section class="tabpane" data-pane="transform">
-        <div id="seqControls">
-          <div class="ctl-row">
-            <button id="btnRC" class="btn-ghost">Reverse complement</button>
-            <button id="btnRev" class="btn-ghost">Reverse</button>
-          </div>
-          <div class="ctl-row">
-            <label>Frame
-              <select id="frameSel">
-                <option value="0">+1</option>
-                <option value="1">+2</option>
-                <option value="2">+3</option>
-              </select>
-            </label>
-            <button id="btnTranslate" class="btn-ghost">Translate</button>
-            <button id="btnSixFrame" class="btn-ghost">Six-frame</button>
-          </div>
-          <div class="ctl-row">
-            <label>Length
-              <input id="seqLen" type="number" min="1" max="5000" value="100" />
-            </label>
-            <button id="btnRandDNA" class="btn-ghost">Random DNA</button>
-            <button id="btnRandRNA" class="btn-ghost">RNA</button>
-            <button id="btnRandProt" class="btn-ghost">Protein</button>
-          </div>
-          <div class="ctl-row">
-            <button id="btnCodonTable" class="btn-ghost">Codon table</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="tabpane" data-pane="orf">
-        <div class="ctl-row">
-          <label>Min AA <input id="orfMin" type="number" min="1" max="5000" value="30" /></label>
-          <button id="btnORF" class="btn-ghost">Find ORFs</button>
-        </div>
-        <div id="orfOut" class="hint">Set min length and search 6 frames.</div>
-      </section>
-
-      <section class="tabpane" data-pane="motif">
-        <div class="ctl-row">
-          <input id="motifIn" type="text" class="grow" placeholder="Motif (IUPAC, e.g. GAATTC)" />
-          <button id="btnMotif" class="btn-ghost">Find motif</button>
-        </div>
-        <div id="motifOut" class="hint">Supports IUPAC ambiguity codes, overlapping hits, both strands.</div>
-      </section>
-
-      <section class="tabpane" data-pane="digest">
-        <div class="ctl-row"><button id="btnDigest" class="btn-ghost">Restriction map</button></div>
-        <div id="digestOut" class="hint">Maps ~20 common enzymes; fragments must sum to length.</div>
-      </section>
-
-      <section class="tabpane" data-pane="protein">
-        <div class="ctl-row"><button id="btnProt" class="btn-ghost">Protein properties</button></div>
-        <div id="protOut" class="hint">MW, pI, GRAVY, aliphatic index, extinction @280.</div>
-      </section>
-
-      <section class="tabpane" data-pane="codon">
-        <div class="ctl-row"><button id="btnCodonUsage" class="btn-ghost">Codon usage</button></div>
-        <div id="codonOut" class="hint">Counts codons per reading frame, shows synonymous usage.</div>
-      </section>
-
-      <section class="tabpane" data-pane="primer">
-        <div class="ctl-row">
-          <label>Min Len <input id="primerMinLen" type="number" value="18" min="15" max="30" style="width:60px"/></label>
-          <label>Max Len <input id="primerMaxLen" type="number" value="24" min="18" max="35" style="width:60px"/></label>
-          <button id="btnPrimer" class="btn-ghost"><svg width="12" height="12"><use href="#icoPrimer"/></svg> Design primers</button>
-        </div>
-        <div id="primerOut" class="hint">Designs 18-24mers, Tm 55-65°C, GC 40-60%, no hairpin.</div>
-      </section>
-
-      <section class="tabpane" data-pane="pcr">
-        <div class="ctl-row">
-          <input id="pcrFwd" type="text" class="grow" placeholder="Forward primer" />
-          <input id="pcrRev" type="text" class="grow" placeholder="Reverse primer" />
-          <button id="btnPCR" class="btn-ghost">In-silico PCR</button>
-        </div>
-        <div id="pcrOut" class="hint">Finds amplicon between primers (rev-comp search).</div>
-      </section>
-
-      <section class="tabpane" data-pane="blast">
-        <div class="ctl-row">
-          <input id="blastQuery" type="text" class="grow" placeholder="Query (uses current seq if empty)" />
-          <label>k <input id="blastK" type="number" value="6" min="3" max="10" style="width:50px"/></label>
-          <button id="btnBlast" class="btn-ghost"><svg width="12" height="12"><use href="#icoBlast"/></svg> BLAST-like</button>
-        </div>
-        <div id="blastOut" class="hint">k-mer exact match against multi-FASTA records (local, no server).</div>
-      </section>
-
-      <section class="tabpane" data-pane="msa">
-        <div class="ctl-row"><button id="btnMSA" class="btn-ghost"><svg width="12" height="12"><use href="#icoMsa"/></svg> Align (simple)</button></div>
-        <div id="msaOut" class="hint">Simple MSA: pads to max length, shows consensus.</div>
-      </section>
-
-      <section class="tabpane" data-pane="dotplot">
-        <div class="ctl-row">
-          <input id="dotSeq2" type="text" class="grow" placeholder="Second sequence (or uses 2nd FASTA record)" />
-          <label>Win <input id="dotWin" type="number" value="10" min="3" max="20" style="width:50px"/></label>
-          <label>Thr <input id="dotThr" type="number" value="8" min="1" max="20" style="width:50px"/></label>
-          <button id="btnDot" class="btn-ghost"><svg width="12" height="12"><use href="#icoDot"/></svg> Dot-plot</button>
-        </div>
-        <div id="dotOut" class="hint">Dot-plot: window matches.</div>
-        <canvas id="dotCanvas" width="300" height="300" style="max-width:100%; border:1px solid var(--border-soft); border-radius:8px; display:none"></canvas>
-      </section>
-
-      <div id="seqResultWrap" class="hidden">
-        <div class="res-head">Result <button id="btnCopyResult" class="btn-ghost sm">Copy</button></div>
-        <pre id="seqResultText"></pre>
-      </div>
-
-      <div class="drawer-foot">
-        <button id="btnAnalyze" class="btn-primary">Analyze with AI ↗</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Settings modal -->
-  <div id="settingsModal" class="modal">
-    <div class="modal-card">
-      <div class="modal-head">
-        <h3><svg width="17" height="17" aria-hidden="true"><use href="#icoGear" /></svg> Settings</h3>
-        <button id="closeSettings" class="icon-btn ghost" aria-label="Close settings">
-          <svg width="18" height="18" aria-hidden="true"><use href="#icoClose" /></svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <fieldset>
-          <legend>API mode</legend>
-          <label class="field">
-            <span>Mode</span>
-            <select id="setApiMode">
-              <option value="groq">Groq — built-in key (visitors need nothing)</option>
-              <option value="byok">Groq — your own API key (free, 14.4k/day)</option>
-              <option value="pollinations">Pollinations — truly free, no key needed (fallback)</option>
-              <option value="gemini">Gemini — 1500 req/day free, 1M context</option>
-              <option value="mistral">Mistral — 1B tokens/month free</option>
-              <option value="github">GitHub Models — free (your GitHub token, 150/day)</option>
-              <option value="openrouter">OpenRouter — free models (30+ models free)</option>
-              <option value="cerebras">Cerebras — 1M tokens/day (needs key)</option>
-              <option value="proxy">Proxy (Cloudflare Worker) — key server-side</option>
-              <option value="local">Local model (Ollama / LM Studio) — offline, unlimited</option>
-            </select>
-          </label>
-          <label class="field" id="proxyRow">
-            <span>Worker URL</span>
-            <input id="setProxyUrl" type="url" placeholder="https://bioinfogpt-worker.your-subdomain.workers.dev" />
-          </label>
-          <label class="field" id="groqKeyRow">
-            <span>Your own Groq API key <small>(optional, free)</small></span>
-            <input id="setGroqKey" type="password" placeholder="gsk_… (leave empty to use the built-in key)" autocomplete="off" />
-            <small>Get free at <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> — 14k req/day for 8B.</small>
-          </label>
-          <label class="field" id="githubRow">
-            <span>GitHub Models token <small>(free)</small></span>
-            <input id="setGithubKey" type="password" placeholder="github_pat_… or ghp_…" autocomplete="off" />
-            <small>Enable <code>models:read</code>. Create at <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens</a>. 150 req/day.</small>
-          </label>
-          <label class="field" id="openrouterRow">
-            <span>OpenRouter API key <small>(free models)</small></span>
-            <input id="setOpenrouterKey" type="password" placeholder="sk-or-v1-…" autocomplete="off" />
-            <small>Get at <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a>. Use <code>:free</code> models.</small>
-          </label>
-          <label class="field" id="cerebrasRow">
-            <span>Cerebras API key <small>(1M tokens/day free)</small></span>
-            <input id="setCerebrasKey" type="password" placeholder="csk-…" autocomplete="off" />
-            <small><a href="https://cloud.cerebras.ai" target="_blank" rel="noopener">cloud.cerebras.ai</a> — 1M/day, 30 RPM.</small>
-          </label>
-          <label class="field" id="geminiRow">
-            <span>Gemini API key <small>(1500 req/day free)</small></span>
-            <input id="setGeminiKey" type="password" placeholder="AIza…" autocomplete="off" />
-            <small><a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com/app/apikey</a> — 1500 req/day Flash, 1M TPM.</small>
-          </label>
-          <label class="field" id="mistralRow">
-            <span>Mistral API key <small>(1B tokens/month free)</small></span>
-            <input id="setMistralKey" type="password" placeholder="…" autocomplete="off" />
-            <small><a href="https://console.mistral.ai/api-keys" target="_blank" rel="noopener">console.mistral.ai/api-keys</a> — 1B/month.</small>
-          </label>
-          <label class="field" id="pollinationsRow">
-            <span>Pollinations API key <small>(free)</small></span>
-            <input id="setPollinationsKey" type="password" placeholder="..." autocomplete="off" />
-            <small>New API: <a href="https://enter.pollinations.ai" target="_blank" rel="noopener">enter.pollinations.ai</a> — model <code>openai</code>.</small>
-          </label>
-          <label class="field" id="localRow">
-            <span>Local API base URL</span>
-            <input id="setLocalUrl" type="url" placeholder="http://localhost:11434/v1" />
-            <small>Ollama: http://localhost:11434/v1 · LM Studio: http://localhost:1234/v1 — offline, unlimited.</small>
-          </label>
-          <label class="field" id="localKeyRow">
-            <span>Optional local API key <small>(usually empty)</small></span>
-            <input id="setLocalKey" type="password" placeholder="(optional)" autocomplete="off" />
-          </label>
-        </fieldset>
-
-        <fieldset>
-          <legend>Language / Accessibility</legend>
-          <label class="field">
-            <span>UI Language</span>
-            <select id="setLang">
-              <option value="en">English</option>
-              <option value="hi">हिन्दी (Hindi)</option>
-            </select>
-          </label>
-          <label class="check"><input id="setHighContrast" type="checkbox" /> High contrast mode</label>
-          <label class="check"><input id="setLargeText" type="checkbox" /> Large text</label>
-          <small>Voice: mic in composer uses Web Speech API (Chrome). TTS uses speechSynthesis.</small>
-        </fieldset>
-
-        <fieldset>
-          <legend>Free alternatives when token expires</legend>
-          <div class="hint" style="line-height:1.7">
-            <ul style="margin:8px 0 0 18px; padding:0">
-              <li><b>Groq 14.4k/day 8B / 1k 70B</b> — console.groq.com/keys</li>
-              <li><b>Pollinations truly free (fallback)</b> — gen.pollinations.ai, model openai</li>
-              <li><b>Gemini 1500/day Flash</b> — aistudio.google.com/apikey</li>
-              <li><b>Mistral 1B/month</b> — console.mistral.ai/api-keys</li>
-              <li><b>GitHub 150/day</b> — github.com/marketplace/models</li>
-              <li><b>OpenRouter 30+ free</b> — openrouter.ai/keys</li>
-              <li><b>Local Ollama unlimited</b> — offline, private</li>
-            </ul>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Generation</legend>
-          <label class="field">
-            <span>Custom model ID <small>(advanced)</small></span>
-            <input id="setCustomModel" type="text" placeholder="leave empty to use llama-3.3-70b-versatile" />
-          </label>
-          <label class="field">
-            <span>Temperature: <b id="tempVal">0.70</b></span>
-            <input id="setTemp" type="range" min="0" max="1.5" step="0.05" value="0.7" />
-          </label>
-          <label class="field">
-            <span>Max output tokens</span>
-            <input id="setMaxTokens" type="number" min="256" max="8192" step="256" value="4096" />
-          </label>
-          <label class="check"><input id="setStreaming" type="checkbox" checked /> Stream responses</label>
-          <label class="check"><input id="setSmart" type="checkbox" checked /> Bioinformatics smart defaults</label>
-        </fieldset>
-
-        <fieldset>
-          <legend>System prompt</legend>
-          <label class="field">
-            <span>Persona</span>
-            <textarea id="setSystem" rows="5"></textarea>
-          </label>
-        </fieldset>
-      </div>
-      <div class="modal-foot">
-        <button id="resetSettings" class="btn-ghost danger">Reset defaults</button>
-        <button id="saveSettings" class="btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Prompt library modal -->
-  <div id="promptModal" class="modal">
-    <div class="modal-card wide">
-      <div class="modal-head">
-        <h3><svg width="17" height="17" aria-hidden="true"><use href="#icoPrompt" /></svg> Prompt library</h3>
-        <button id="closePrompt" class="icon-btn ghost" aria-label="Close"><svg width="18" height="18"><use href="#icoClose"/></svg></button>
-      </div>
-      <div class="modal-body scroll" id="promptBody"></div>
-    </div>
-  </div>
-
-  <!-- Shortcuts modal -->
-  <div id="shortcutsModal" class="modal">
-    <div class="modal-card">
-      <div class="modal-head">
-        <h3>Shortcuts & Accessibility</h3>
-        <button id="closeShortcuts" class="icon-btn ghost" aria-label="Close"><svg width="18" height="18"><use href="#icoClose"/></svg></button>
-      </div>
-      <div class="modal-body">
-        <div class="hint" style="line-height:1.8">
-          <b>Keyboard:</b><br/>
-          <kbd>Enter</kbd> Send · <kbd>Shift+Enter</kbd> Newline · <kbd>Ctrl+B</kbd> Toggle sidebar · <kbd>Ctrl+K</kbd> Search chats · <kbd>/</kbd> Focus composer · <kbd>Esc</kbd> Close panels · <kbd>?</kbd> This help<br/><br/>
-          <b>Voice:</b> Click 🎙️ mic → speak → Enter to send. Speaker icon on assistant messages reads aloud (speechSynthesis).<br/><br/>
-          <b>Files:</b> Drag-drop FASTA/FASTQ/GenBank/CSV anywhere or click 📎. Supports multi-record FASTA.<br/><br/>
-          <b>PWA:</b> Installable — browser menu → Install app. Works offline (UI cached, LLM needs net or local).<br/><br/>
-          <b>Accessibility:</b> High contrast + large text in Settings, ARIA labels, focus visible, reduced motion respected.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Share modal -->
-  <div id="shareModal" class="modal">
-    <div class="modal-card">
-      <div class="modal-head">
-        <h3><svg width="17" height="17"><use href="#icoShare"/></svg> Share chat</h3>
-        <button id="closeShare" class="icon-btn ghost" aria-label="Close"><svg width="18" height="18"><use href="#icoClose"/></svg></button>
-      </div>
-      <div class="modal-body">
-        <label class="field">
-          <span>Shareable link (encrypted in URL hash, no server)</span>
-          <input id="shareLink" type="text" readonly />
-        </label>
-        <div class="ctl-row">
-          <button id="copyShareLink" class="btn-ghost">Copy link</button>
-          <button id="exportPdfBtn" class="btn-ghost">Export PDF / Print</button>
-        </div>
-        <small class="hint">Link contains chat base64 in hash. Anyone with link can view. No data sent to server.</small>
-      </div>
-    </div>
-  </div>
-
-  <!-- Codon table modal -->
-  <div id="codonModal" class="modal">
-    <div class="modal-card wide">
-      <div class="modal-head">
-        <h3>Standard genetic code</h3>
-        <button id="btnCloseCodon" class="icon-btn ghost" aria-label="Close"><svg width="18" height="18"><use href="#icoClose"/></svg></button>
-      </div>
-      <div class="modal-body scroll" id="codonBody"></div>
-    </div>
-  </div>
+  <div id="promptModal" class="modal"><div class="modal-card wide"><div class="modal-head"><h3>Prompt library — 20 methods</h3><button id="closePrompt" class="icon-btn ghost">×</button></div><div class="modal-body scroll" id="promptBody"></div></div></div>
+  <div id="shortcutsModal" class="modal"><div class="modal-card"><div class="modal-head"><h3>Shortcuts</h3><button id="closeShortcuts" class="icon-btn ghost">×</button></div><div class="modal-body"><div class="mono small" style="line-height:1.9">Enter send • Shift+Enter newline • Ctrl+B sidebar • Ctrl+K search • / focus • ? help • Drag file • Mic voice • Full tools tab uses entire screen</div></div></div></div>
+  <div id="shareModal" class="modal"><div class="modal-card"><div class="modal-head"><h3>Share</h3><button id="closeShare" class="icon-btn ghost">×</button></div><div class="modal-body"><label class="field"><span>Link (hash, no server)</span><input id="shareLink" type="text" readonly /></label><div style="display:flex; gap:8px;"><button id="copyShareLink" class="btn-ghost sm">Copy</button><button id="exportPdfBtn" class="btn-ghost sm">Print / PDF</button></div></div></div></div>
+  <div id="codonModal" class="modal"><div class="modal-card wide"><div class="modal-head"><h3>Genetic code</h3><button id="btnCloseCodon" class="icon-btn ghost">×</button></div><div class="modal-body scroll" id="codonBody"></div></div></div>
 
   <div id="toasts" aria-live="polite"></div>
 

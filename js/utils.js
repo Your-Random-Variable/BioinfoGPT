@@ -30,7 +30,19 @@ window.Utils = (() => {
     if (h < 24) return `${h}h ago`;
     const d = Math.floor(h / 24);
     if (d < 7) return `${d}d ago`;
-    return new Date(ts).toLocaleDateString();
+    return formatTimestamp(ts);
+  }
+
+  function formatTimestamp(ts) {
+    try {
+      const d = new Date(ts);
+      // Scientific, unambiguous, 24h, correct timezone local
+      return d.toLocaleString('en-GB', {
+        day: '2-digit', month: 'short', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false
+      });
+    } catch { return new Date(ts).toISOString(); }
   }
 
   function download(filename, text) {
