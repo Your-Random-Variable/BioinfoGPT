@@ -30,6 +30,9 @@ window.CONFIG = {
    */
   DEFAULT_GROQ_KEY: "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",
 
+  /* Optional secondary Groq keys for rotation/fallback (free) */
+  SECONDARY_GROQ_KEYS: [],
+
   /* ------------------------------------------------------------------
    * 3) Optional shared secret (anti-abuse)
    * ------------------------------------------------------------------
@@ -39,14 +42,69 @@ window.CONFIG = {
   APP_SECRET: "",
 
   /* ------------------------------------------------------------------
-   * 4) Local model mode (Ollama / LM Studio / any OpenAI-compatible
+   * 4) Free alternative providers (no credit card) - GOOD LIMITS
+   * ------------------------------------------------------------------ */
+  GITHUB_MODELS_URL: "https://models.github.ai/inference",
+  OPENROUTER_URL: "https://openrouter.ai/api/v1",
+  CEREBRAS_URL: "https://api.cerebras.ai/v1",
+  GEMINI_URL: "https://generativelanguage.googleapis.com/v1beta/openai",
+  MISTRAL_URL: "https://api.mistral.ai/v1",
+  POLLINATIONS_URL: "https://gen.pollinations.ai",
+  DEFAULT_GITHUB_TOKEN: "",
+  DEFAULT_OPENROUTER_KEY: "",
+  DEFAULT_CEREBRAS_KEY: "", // removed - Cerebras not giving free queries
+  DEFAULT_GEMINI_KEY: "",
+  DEFAULT_MISTRAL_KEY: "",
+  DEFAULT_POLLINATIONS_KEY: "",
+  DEFAULT_POLLINATIONS_MODEL: "openai",
+
+  GITHUB_FALLBACK_MODELS: [
+    "openai/gpt-4o-mini",
+    "openai/gpt-4o",
+    "Meta-Llama-3.1-405B-Instruct",
+    "cohere/cohere-command-r-plus",
+  ],
+  OPENROUTER_FALLBACK_MODELS: [
+    "openai/gpt-4o-mini:free",
+    "meta-llama/llama-3.1-8b-instruct:free",
+    "google/gemma-2-9b-it:free",
+    "mistralai/mistral-7b-instruct:free",
+    "qwen/qwen-2-7b-instruct:free",
+  ],
+  CEREBRAS_FALLBACK_MODELS: [
+    "llama3.1-8b",
+    "llama-3.3-70b",
+    "qwen-3-32b",
+    "llama3.1-70b",
+  ],
+  GEMINI_FALLBACK_MODELS: [
+    "gemini-2.0-flash",
+    "gemini-2.0-flash-lite",
+    "gemini-1.5-flash",
+    "gemini-1.5-pro",
+  ],
+  MISTRAL_FALLBACK_MODELS: [
+    "mistral-large-latest",
+    "mistral-small-latest",
+    "codestral-latest",
+    "open-mistral-7b",
+  ],
+  POLLINATIONS_FALLBACK_MODELS: [
+    "openai",
+    "openai-large",
+    "mistral",
+    "llama",
+  ],
+
+  /* ------------------------------------------------------------------
+   * 5) Local model mode (Ollama / LM Studio / any OpenAI-compatible
    *    server on your machine or LAN). Fully offline — no API key.
    * ------------------------------------------------------------------ */
   LOCAL_BASE_URL: "http://localhost:11434/v1",   // Ollama default; LM Studio = http://localhost:1234/v1
   LOCAL_FALLBACK_MODELS: ["llama3.1", "qwen2.5-coder:7b", "deepseek-coder-v2:16b"],
 
   /* ------------------------------------------------------------------
-   * 5) Defaults
+   * 6) Defaults
    * ------------------------------------------------------------------ */
   DEFAULT_MODEL: "llama-3.3-70b-versatile",
   DEFAULT_TEMPERATURE: 0.7,

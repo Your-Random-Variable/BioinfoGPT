@@ -1,0 +1,16 @@
+{
+  "name": "BioinfoGPT — Bioinformatics AI Assistant",
+  "short_name": "BioinfoGPT",
+  "description": "AI assistant for bioinformatics: sequence tools, primers, BLAST, MSA, chat.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#080b16",
+  "theme_color": "#080b16",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
