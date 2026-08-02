@@ -44,10 +44,14 @@ html[data-theme="light"]{
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0; font-family:var(--sans); font-size:14.5px; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; overflow:hidden; line-height:1.5}
-button{font-family:inherit; cursor:pointer; color:inherit}
-select,input,textarea{font-family:inherit; color:var(--text)}
+button{font-family:inherit; cursor:pointer; color:inherit; pointer-events:auto; touch-action:manipulation; user-select:none; -webkit-tap-highlight-color:transparent}
+select,input,textarea{font-family:inherit; color:var(--text); pointer-events:auto}
 :focus-visible{outline:1.5px solid var(--accent); outline-offset:2px}
 .mono{font-family:var(--mono)} .small{font-size:12px} .muted{color:var(--muted)} .full{width:100%}
+
+/* Ensure no invisible overlay blocks clicks */
+#app *, #col *, #main *, #chatView *, #toolsView *, #toolsNav *, #toolsWorkbench *, #composerWrap *, #composer *{pointer-events:auto}
+#genBar, #dropOverlay.hidden, #scrim[hidden], .view:not(.active), .modal:not(.open), .scroll-down.hidden{pointer-events:none !important}
 
 /* Shell */
 #app{display:flex; height:100vh; height:100dvh; overflow:hidden; position:relative}
