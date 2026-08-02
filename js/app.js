@@ -349,19 +349,19 @@
 
   /* ======================== Tools Catalog - clean, scientific ========================= */
   const TOOLS_CATALOG=[
-    {id:"info", title:"Overview", desc:"Complete catalog of 12 methods, all local, AI-assisted. Start here.", cat:"general", icon:""},
-    {id:"stats", title:"Sequence Stats", desc:"Length, GC/AT%, Tm (Wallace), MW, purine/pyrimidine, base counts, sliding GC window.", cat:"qc"},
-    {id:"transform", title:"Transform", desc:"Reverse complement (IUPAC-aware), reverse, translate in 3 frames, six-frame, random generators, codon table.", cat:"transform"},
-    {id:"orf", title:"ORF Prediction", desc:"Six-frame ATG→stop scan, 1-based coords with reverse mapping, min AA filter, longest-first, complete flag.", cat:"annotation"},
-    {id:"motif", title:"Motif Search", desc:"IUPAC motifs (R,Y,S,W,K,M,B,D,H,V,N) with overlapping detection via lastIndex, both strands.", cat:"search"},
-    {id:"digest", title:"Restriction Digest", desc:"20 enzymes (EcoRI BamHI HindIII...), cut = match+^offset+1, fragments sum to length, sorted by cuts.", cat:"cloning"},
-    {id:"protein", title:"Protein Properties", desc:"MW, pI by bisect 0-14, GRAVY (Kyte-Doolittle), aliphatic index, extinction 280, charge pH7.", cat:"protein"},
-    {id:"codon", title:"Codon Usage", desc:"Codon counts per frame, relative synonymous usage per AA, RSCU-like bar chart.", cat:"expression"},
-    {id:"primer", title:"Primer Design", desc:"Tm via Wallace/long, GC 40-60%, no 4-mer hairpin, sorted by Tm closeness to 60°C.", cat:"pcr"},
-    {id:"pcr", title:"In-silico PCR", desc:"Finds forward + reverse-complement reverse primers, returns amplicon coords and sequence.", cat:"pcr"},
-    {id:"blast", title:"BLAST-like (k-mer)", desc:"Local k-mer exact match against multi-FASTA DB, score% = matches/(len-k+1), no server.", cat:"search"},
-    {id:"msa", title:"MSA Viewer", desc:"Simple MSA: pad to max len, consensus by plurality, monospace view with IDs.", cat:"alignment"},
-    {id:"dotplot", title:"Dot-plot", desc:"Window w, threshold thr, points where matches>=thr, 300px canvas, accent dots.", cat:"alignment"},
+    {id:"info", title:"Workbench Overview", desc:"Complete reference of 12 validated methods. All computations local, AI only interprets trusted metrics.", cat:"overview"},
+    {id:"stats", title:"Sequence Statistics & QC", desc:"Length, base composition, GC/AT%, melting temperature (Wallace), molecular weight, purine/pyrimidine ratio, sliding-window GC.", cat:"qc"},
+    {id:"transform", title:"Reverse Complement & Translation", desc:"IUPAC-aware reverse complement, reverse, translation in +1/+2/+3, six-frame translation, random sequence generation, genetic code table.", cat:"transform"},
+    {id:"orf", title:"Open Reading Frame Prediction", desc:"Six-frame scanning for ATG-initiated ORFs to stop codons (TAA/TAG/TGA), 1-based coordinates with reverse-strand mapping, filter by minimal AA length, sorted by length.", cat:"annotation"},
+    {id:"motif", title:"Motif Search (IUPAC)", desc:"Degenerate motif search using IUPAC codes R,Y,S,W,K,M,B,D,H,V,N, overlapping detection via lastIndex anchoring, both strands.", cat:"search"},
+    {id:"digest", title:"Restriction Endonuclease Map", desc:"20 type II enzymes: EcoRI, BamHI, HindIII, NotI, XhoI, SalI, PstI, SmaI, KpnI, SacI, XbaI, SpeI, NcoI, NdeI, EcoRV, HaeIII, AluI, TaqI, BglII, ApaI. Cut position = match + ^ offset +1, fragment sizes sum to sequence length.", cat:"cloning"},
+    {id:"protein", title:"Protein Physicochemical Properties", desc:"Molecular weight (AA sum - (n-1)*18.015), isoelectric point by bisection pH 0-14, GRAVY (Kyte-Doolittle), aliphatic index, extinction coefficient at 280 nm (W*5500+Y*1490+C*125), net charge at pH7.", cat:"protein"},
+    {id:"codon", title:"Codon Usage & RSCU", desc:"Codon frequency per reading frame, synonymous codon usage fraction per amino acid, relative synonymous codon usage visualization.", cat:"expression"},
+    {id:"primer", title:"Primer Design (qPCR)", desc:"De novo primer design: length 18-24 nt, Tm 55-65°C (Wallace/long), GC 40-60%, hairpin filter (no 4-mer self-complement), sorted by proximity to ideal Tm 60°C.", cat:"pcr"},
+    {id:"pcr", title:"In Silico PCR", desc:"Amplicon prediction via forward primer exact match and reverse primer reverse-complement search, returns amplicon coordinates, length, and sequence.", cat:"pcr"},
+    {id:"blast", title:"Local Alignment (BLAST-like)", desc:"k-mer based exact match search (k=3-10) against multi-FASTA database, scoring % = matches/(len-k+1), no external server, privacy-preserving.", cat:"search"},
+    {id:"msa", title:"Multiple Sequence Alignment Viewer", desc:"Simple MSA by padding to maximal length, consensus by plurality, monospace viewer with identifiers, suitable for quick inspection.", cat:"alignment"},
+    {id:"dotplot", title:"Dot-Plot Analysis", desc:"Pairwise comparison with sliding window (w) and threshold (thr), points where matches>=thr, rendered on 300×300 canvas for repeat/inversion detection.", cat:"alignment"},
   ];
 
   /* ======================== Tools ========================= */
@@ -393,7 +393,7 @@
         item.type="button";
         item.className="tool-item"+(tool.id===this.currentTool?" active":"");
         item.dataset.tool=tool.id;
-        item.innerHTML=`<div class="tool-item-title">${this.esc(tool.title)} <span class="chip sm" style="font-size:10px">${this.esc(tool.cat)}</span></div><div class="tool-item-desc">${this.esc(tool.desc)}</div><div class="tool-item-meta"><span>${tool.id}</span><span>local</span><span>AI</span></div>`;
+        item.innerHTML=`<div class="tool-item-title">${this.esc(tool.title)}</div><div class="tool-item-desc">${this.esc(tool.desc)}</div>`;
         item.addEventListener("click",()=>this.selectTool(tool.id));
         listEl.appendChild(item);
       });
@@ -416,7 +416,7 @@
       let html="";
       switch(id){
         case "info":
-          html=`<div class="tool-info-hero"><div class="chip" style="background:var(--text); color:var(--bg); border:none; font-weight:700;">12 Modules • Local • AI-assisted</div><h4 style="margin:8px 0 4px; font-size:14px;">Bioinformatics Workbench — Method Reference</h4><p class="hint" style="margin:0">All methods run client-side (no server). Click any method on left to load its controls. Each result has <b>Explain with AI</b> to interpret using trusted local counts.</p></div>`;
+          html=`<div class="tool-info-hero"><div class="chip" style="background:var(--text); color:var(--bg); border:none; font-weight:700;">12 Validated Methods • 100% Local • AI-Assisted Interpretation</div><h4 style="margin:10px 0 6px; font-size:15px; font-weight:600;">Bioinformatics Workbench — Complete Method Reference</h4><p class="hint" style="margin:0 0 12px; line-height:1.6">All computations execute client-side in the browser. No data leaves your device except LLM inference. Each module provides deterministic metrics; AI layer only interprets results flagged as trusted to prevent hallucination.</p></div><div style="display:grid; gap:8px;">` + TOOLS_CATALOG.filter(t=>t.id!=="info").map(tool=>`<div class="tool-card" style="cursor:pointer" data-tool-jump="${tool.id}"><div style="display:flex; justify-content:space-between; align-items:center; gap:8px;"><b>${this.esc(tool.title)}</b><span class="chip sm">${this.esc(tool.cat)}</span></div><div class="hint" style="margin-top:4px; font-size:12px; line-height:1.5">${this.esc(tool.desc)}</div><div style="margin-top:6px; display:flex; gap:6px;"><span class="chip sm">local</span><span class="chip sm">deterministic</span><span class="chip sm">AI explain</span></div></div>`).join("") + `</div>`;
           break;
         case "stats":
           html=`<div class="hint">Stats update automatically from sequence input. No extra controls.</div>`;
@@ -461,6 +461,10 @@
           html=`<div class="hint">No controls for ${this.esc(id)}</div>`;
       }
       cEl.innerHTML=html;
+      // bind jump from info cards to tool
+      cEl.querySelectorAll("[data-tool-jump]").forEach(el=>{
+        el.addEventListener("click",()=>{ this.selectTool(el.getAttribute("data-tool-jump")); });
+      });
       // rebind buttons for this tool
       const map=[
         ["#btnRC",()=>this.apply(s=>BIO.reverseComplement(s))],
