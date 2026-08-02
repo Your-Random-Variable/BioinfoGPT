@@ -198,10 +198,18 @@
   <!-- Tools panel -->
   <div id="toolsPanel" class="drawer" aria-label="Sequence tools">
     <div class="drawer-head">
-      <h3><svg width="17" height="17" aria-hidden="true"><use href="#icoFlask" /></svg> <span data-i18n="seqTools">Sequence tools</span></h3>
-      <button id="closeTools" class="icon-btn ghost" aria-label="Close sequence tools">
-        <svg width="18" height="18" aria-hidden="true"><use href="#icoClose" /></svg>
-      </button>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <h3><svg width="17" height="17" aria-hidden="true"><use href="#icoFlask" /></svg> <span data-i18n="seqTools">Sequence tools</span></h3>
+        <span class="chip" style="margin:0; font-size:10px; background:var(--accent-soft); color:var(--accent); border-color:var(--accent);">AI-POWERED</span>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button id="toolsFullscreen" class="icon-btn ghost" title="Fullscreen tools" aria-label="Fullscreen">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 3H5a2 2 0 00-2 2v3M16 3h3a2 2 0 012 2v3M8 21H5a2 2 0 01-2-2v-3M16 21h3a2 2 0 002-2v-3"/></svg>
+        </button>
+        <button id="closeTools" class="icon-btn ghost" aria-label="Close sequence tools">
+          <svg width="18" height="18" aria-hidden="true"><use href="#icoClose" /></svg>
+        </button>
+      </div>
     </div>
     <div class="drawer-body">
       <textarea id="seqInput" rows="6" spellcheck="false" placeholder="Paste a DNA, RNA or protein sequence here… supports multi-record FASTA, whitespace/digits/hyphens ignored. Or drag-drop file."></textarea>
@@ -211,21 +219,47 @@
       </div>
 
       <nav class="tabs" aria-label="Tool tabs">
-        <button class="tab active" data-tab="stats">Stats</button>
+        <button class="tab active" data-tab="info" title="Complete info about all tools"><svg width="12" height="12" style="margin-right:4px"><use href="#icoPrompt"/></svg>Info</button>
+        <button class="tab" data-tab="stats">Stats</button>
         <button class="tab" data-tab="transform">Transform</button>
         <button class="tab" data-tab="orf">ORF</button>
         <button class="tab" data-tab="motif">Motif</button>
         <button class="tab" data-tab="digest">Digest</button>
         <button class="tab" data-tab="protein">Protein</button>
         <button class="tab" data-tab="codon">Codon</button>
-        <button class="tab" data-tab="primer">Primer</button>
+        <button class="tab" data-tab="primer"><svg width="10" height="10"><use href="#icoPrimer"/></svg> Primer</button>
         <button class="tab" data-tab="pcr">PCR</button>
-        <button class="tab" data-tab="blast">BLAST</button>
-        <button class="tab" data-tab="msa">MSA</button>
-        <button class="tab" data-tab="dotplot">Dot-plot</button>
+        <button class="tab" data-tab="blast"><svg width="10" height="10"><use href="#icoBlast"/></svg> BLAST</button>
+        <button class="tab" data-tab="msa"><svg width="10" height="10"><use href="#icoMsa"/></svg> MSA</button>
+        <button class="tab" data-tab="dotplot"><svg width="10" height="10"><use href="#icoDot"/></svg> Dot-plot</button>
       </nav>
 
-      <section class="tabpane active" data-pane="stats">
+      <section class="tabpane active" data-pane="info">
+        <div class="tool-info-hero">
+          <div class="chip" style="background:var(--grad); color:#05121a; border:none; font-weight:700;">🧬 12 Tools + AI</div>
+          <h4 style="margin:8px 0 4px; font-size:14px;">Complete Bioinformatics Toolkit</h4>
+          <p class="hint" style="margin:0">All tools run 100% locally in your browser (no server). Click <b>AI</b> on any result for deep explanation. Full-screen mode uses entire screen for analysis.</p>
+        </div>
+        <div style="display:grid; gap:8px;">
+          <div class="tool-card"><b>📊 Stats</b> — Length, GC/AT%, Tm, MW, purines/pyrimidines, base counts, sliding-window GC. <i>AI: explains GC bias & Tm meaning.</i> <span class="chip sm">DNA/RNA/Protein</span></div>
+          <div class="tool-card"><b>🔄 Transform</b> — Reverse complement (IUPAC), reverse, translate (+1/+2/+3), six-frame, random DNA/RNA/protein, codon table. <i>AI: writes Biopython code.</i></div>
+          <div class="tool-card"><b>🔍 ORF</b> — Scans all 6 frames ATG→stop, 1-based coords mapped for reverse strand, filter by min AA, longest-first. <i>AI: annotates longest ORF function.</i></div>
+          <div class="tool-card"><b>🧩 Motif (IUPAC)</b> — Finds motifs with ambiguity (R,Y,S,W,K,M,B,D,H,V,N), overlapping hits (AAA in AAAA =2), both strands. <i>AI: biological role of motif.</i></div>
+          <div class="tool-card"><b>✂️ Digest</b> — 20 enzymes (EcoRI BamHI HindIII NotI XhoI SalI PstI SmaI KpnI SacI XbaI SpeI NcoI NdeI EcoRV HaeIII AluI TaqI BglII ApaI), cut = index+^offset+1, fragments sum=length. <i>AI: designs cloning strategy.</i></div>
+          <div class="tool-card"><b>🧬 Protein</b> — MW (sum- (n-1)*18.015), pI (bisect 0-14), GRAVY (Kyte-Doolittle), aliphatic index, extinction 280 (W*5500+Y*1490+C*125), charge pH7. <i>AI: solubility & stability.</i></div>
+          <div class="tool-card"><b>🔤 Codon</b> — Counts codons per frame, synonymous usage (fraction per AA), RSCU-like table + bar. <i>AI: codon optimization.</i></div>
+          <div class="tool-card"><b>🧪 Primer</b> — Designs 18-24mers, Tm 55-65°C, GC 40-60%, no 4mer hairpin, sorted by Tm. <i>AI: checks dimer & suggests PCR conditions.</i></div>
+          <div class="tool-card"><b>🧫 PCR</b> — In-silico PCR: finds fwd + rev-comp rev, returns amplicon coords & seq. <i>AI: predicts PCR success.</i></div>
+          <div class="tool-card"><b>💥 BLAST-like</b> — k-mer (k=3-10) exact match vs multi-FASTA DB, score% = matches/(len-k+1). Local, no server. <i>AI: interprets hits.</i></div>
+          <div class="tool-card"><b>📐 MSA</b> — Pads to max length, consensus (most common per column), displays ID + aligned. <i>AI: finds conserved regions.</i></div>
+          <div class="tool-card"><b>⚫ Dot-plot</b> — Window w=10 thr=8, points where matches>=thr, canvas 300x300, accent dots. <i>AI: detects repeats/inversions.</i></div>
+        </div>
+        <div class="hint" style="margin-top:8px; padding:8px; background:var(--surface-2); border-radius:8px; border:1px solid var(--border-soft)">
+          <b>AI Integration:</b> Every tool has <span class="chip sm" style="background:var(--grad); color:#000; border:none;">Explain with AI</span> — sends locally computed values (trust these, don't recompute) to LLM to prevent hallucination. Top button <b>Analyze with AI ↗</b> sends full context.
+        </div>
+      </section>
+
+      <section class="tabpane" data-pane="stats">
         <div id="seqResults" class="hint">Paste or type a sequence above. Whitespace, digits and hyphens are ignored.</div>
       </section>
 
