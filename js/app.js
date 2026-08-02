@@ -801,6 +801,27 @@
     const chat=chatEl(); if(chat) chat.addEventListener("scroll",()=>{ const c=chatEl(); const far=c.scrollHeight-c.scrollTop-c.clientHeight>220; $("#scrollDown")?.classList.toggle("hidden",!far); });
     window.addEventListener("resize",debounce(()=>{ const sc=$("#scrim"); if(sc) sc.hidden=!(sidebarOpen()&&isNarrow()); },150));
     const clearConvos=$("#clearConvos"); if(clearConvos) clearConvos.addEventListener("click",()=>{ if(!confirm("Delete all chat history?")) return; state.convos=[]; Store.save([]); state.chat=null; ensureChat(); persistChat(); renderAll(); toast("History cleared"); });
+    const clearCacheBtn=$("#clearCacheBtn");
+    if(clearCacheBtn){
+      clearCacheBtn.addEventListener("click", async()=>{
+        try{
+          if('caches' in window){
+            const keys=await caches.keys();
+            await Promise.all(keys.map(k=>caches.delete(k)));
+          }
+          if('serviceWorker' in navigator){
+            const regs=await navigator.serviceWorker.getRegistrations();
+            for(const r of regs) await r.unregister();
+          }
+          localStorage.clear();
+          sessionStorage.clear();
+          toast("Cache cleared — reloading", "info", 2000);
+          setTimeout(()=>location.reload(true), 1000);
+        }catch(e){
+          toast("Clear failed: "+e.message, "error");
+        }
+      });
+    }
     const closeSettings=$("#closeSettings"); if(closeSettings) closeSettings.addEventListener("click",()=>$("#settingsModal").classList.remove("open"));
     const saveSettingsBtn=$("#saveSettings"); if(saveSettingsBtn) saveSettingsBtn.addEventListener("click",saveSettings);
     const resetSettingsBtn=$("#resetSettings"); if(resetSettingsBtn) resetSettingsBtn.addEventListener("click",resetSettings);
