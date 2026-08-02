@@ -665,7 +665,31 @@
   /* PWA */
   function initPWA(){
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('./sw.js').then(()=>console.log('SW registered')).catch(()=>{});
+      navigator.serviceWorker.register('./sw.js').then(reg=>{
+        console.log('SW registered', reg.scope);
+        // Check for updates every time
+        reg.update();
+        // Listen for new SW
+        reg.addEventListener('updatefound', ()=>{
+          const nw=reg.installing;
+          if(nw) nw.addEventListener('statechange', ()=>{
+            if(nw.state==='installed' && navigator.serviceWorker.controller){
+              toast('New version available — refreshing...', 'info', 2500);
+              setTimeout(()=>location.reload(true), 1200);
+            }
+          });
+        });
+      }).catch(()=>{});
+      navigator.serviceWorker.addEventListener('message', e=>{
+        if(e.data && e.data.type==='SW_UPDATED'){
+          toast('App updated to '+e.data.version+' — reloading', 'info', 2000);
+          setTimeout(()=>location.reload(true), 1000);
+        }
+      });
+      // Also listen for controller change
+      navigator.serviceWorker.addEventListener('controllerchange', ()=>{
+        // console.log('controller changed');
+      });
     }
   }
 
